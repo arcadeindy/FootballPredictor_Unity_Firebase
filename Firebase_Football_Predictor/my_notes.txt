@@ -1,0 +1,10 @@
+26/06/2018
+
+mechahamster is google's own demonstration of firebase powers
+as well as other google pages about firebase
+
+Video of what I'd like to achieve:
+https://www.youtube.com/watch?v=0mhYrDJ5Dfw
+
+other useful sites:
+https://xinyustudio.wordpress.com/2017/01/22/using-firebase-in-unity3d-tutorial-2-authorization-and-user-login-example-with-user-name-and-password/
