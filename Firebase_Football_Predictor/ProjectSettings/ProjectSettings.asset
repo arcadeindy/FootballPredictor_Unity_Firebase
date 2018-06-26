@@ -157,7 +157,8 @@ PlayerSettings:
   resolutionScalingMode: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    Android: com.Flinton.FootballPredictor
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
@@ -242,8 +243,8 @@ PlayerSettings:
   AndroidTargetDevice: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: 
-  AndroidKeyaliasName: 
+  AndroidKeystoreName: C:/Users/Alan/Documents/GitHub/FootballPredictor_Unity_Firebase/Firebase_Football_Predictor/user.keystore
+  AndroidKeyaliasName: aflinton
   AndroidTVCompatibility: 1
   AndroidIsGame: 1
   AndroidEnableTango: 0
