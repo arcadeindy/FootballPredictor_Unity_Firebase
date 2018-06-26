@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "277935062647",
+    "firebase_url": "https://unityfirebasefootballpredictor.firebaseio.com",
+    "project_id": "unityfirebasefootballpredictor",
+    "storage_bucket": "unityfirebasefootballpredictor.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277935062647:android:5d46bfdcd4b5003b",
+        "android_client_info": {
+          "package_name": "com.Flinton.FootballPredictor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "277935062647-grvje56tafb30agvtous5ad7fk3j9q51.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.Flinton.FootballPredictor",
+            "certificate_hash": "3b9f4c48e38962fb1ebc8457caf6c0796dfe626f"
+          }
+        },
+        {
+          "client_id": "277935062647-c8s8es7b671n1pjoeh1vn7hvk84o7n6j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfewJUI6nU_oqiXkejli-0AbqkOT4mRMo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "277935062647-c8s8es7b671n1pjoeh1vn7hvk84o7n6j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
