@@ -9,35 +9,114 @@ public class Prediction_Scene : MonoBehaviour {
 
     public GameObject _prediction_content;
     public GameObject _prediction_score_template;
+    public GameObject _submit_prediction_button;
 
-	// Use this for initialization
-	void Start ()
+
+    Dictionary<string, object> defaults = new Dictionary<string, object>();
+
+    // Use this for initialization
+    void Start ()
     {
+        //set_firebase_defaults();
+        //get_fixtures_from_firebase();
+        //add_prediciton_button();
+
+        //Screen.SetResolution(Screen.width / 2, Screen.height / 2, true);
+        //GooglePlayServicesSignIn.InitializeGooglePlayGames();
+        InitializeFirebaseAndStart();
+    }
+
+    void StartGame()
+    {
+        // Remote Config data has been fetched, so this applies it for this play session:
+        Firebase.RemoteConfig.FirebaseRemoteConfig.ActivateFetched();
+        Firebase.AppOptions ops = new Firebase.AppOptions();
+       // CommonData.app = Firebase.FirebaseApp.Create(ops);
+      //  stateManager.PushState(new States.Startup());
+
         get_fixtures_from_firebase();
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        add_prediciton_button();
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 
     // Sets the default values for remote config.  These are the values that will
     // be used if we haven't fetched yet.
+    void set_firebase_defaults()
+    {
+        defaults.Add("Match_1", "ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_2", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_3", "HDDVCHE TIME1500 DATE03072018");
+        defaults.Add("Match_4", "WHUVWAT TIME1500 DATE03072018");
+        defaults.Add("Match_5", "TOTVLIV TIME1500 DATE03072018");
+        defaults.Add("Match_6", "MUNVSOU TIME1500 DATE03072018");
+        defaults.Add("Match_7", "CRYVLEI TIME1500 DATE03072018");
+        defaults.Add("Match_8", "LIVvNEW TIME1500 DATE03072018");
+        defaults.Add("Match_9", "BOUvARS TIME1500 DATE03072018");
+        defaults.Add("Match_10", "FULVWLV TIME1500 DATE03072018");
+
+        Firebase.RemoteConfig.FirebaseRemoteConfig.SetDefaults(defaults);
+        Firebase.RemoteConfig.FirebaseRemoteConfig.FetchAsync(System.TimeSpan.Zero);
+    }
+
+    // When the app starts, check to make sure that we have
+    // the required dependencies to use Firebase, and if not,
+    // add them if possible.
+    void InitializeFirebaseAndStart()
+    {
+        Firebase.DependencyStatus dependencyStatus = Firebase.FirebaseApp.CheckDependencies();
+
+        if (dependencyStatus != Firebase.DependencyStatus.Available)
+        {
+            Firebase.FirebaseApp.FixDependenciesAsync().ContinueWith(task => {
+                dependencyStatus = Firebase.FirebaseApp.CheckDependencies();
+                if (dependencyStatus == Firebase.DependencyStatus.Available)
+                {
+                    InitializeFirebaseComponents();
+                }
+                else
+                {
+                    Debug.LogError(
+                        "Could not resolve all Firebase dependencies: " + dependencyStatus);
+                    Application.Quit();
+                }
+            });
+        }
+        else
+        {
+            InitializeFirebaseComponents();
+        }
+    }
+
+    void InitializeFirebaseComponents()
+    {
+        System.Threading.Tasks.Task.WhenAll(
+            InitializeRemoteConfig()
+          ).ContinueWith(task => { StartGame(); });
+    }
+
+    
+
+    //Sets the default values for remote config.These are the values that will
+    //be used if we haven't fetched yet.
     System.Threading.Tasks.Task InitializeRemoteConfig()
     {
-        Dictionary<string, object> defaults = new Dictionary<string, object>();
 
         // Adding first match as a test
         // Match ID and Team names and Time and Date
-        defaults.Add("Match_1", "ARSVMCI TIME1500 DATE07072018");
-        defaults.Add("Match_2", "BOUVBRH TIME1730 DATE17072018");
-        defaults.Add("Match_3", "HDDVCHE TIME1500 DATE08072018");
-        defaults.Add("Match_3", "WHUVWAT TIME1500 DATE08072018");
-        defaults.Add("Match_4", "TOTVLIV TIME1500 DATE08072018");
-        defaults.Add("Match_5", "MUNVSOU TIME1500 DATE08072018");
-        defaults.Add("Match_6", "CRYVLEI TIME1500 DATE08072018");
-
+        defaults.Add("Match_1", "ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_2", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_3", "HDDVCHE TIME1500 DATE03072018");
+        defaults.Add("Match_4", "WHUVWAT TIME1500 DATE03072018");
+        defaults.Add("Match_5", "TOTVLIV TIME1500 DATE03072018");
+        defaults.Add("Match_6", "MUNVSOU TIME1500 DATE03072018");
+        defaults.Add("Match_7", "CRYVLEI TIME1500 DATE03072018");
+        defaults.Add("Match_8", "LIVvNEW TIME1500 DATE03072018");
+        defaults.Add("Match_9", "BOUvARS TIME1500 DATE03072018");
+        defaults.Add("Match_10", "FULVWLV TIME1500 DATE03072018");
 
         Firebase.RemoteConfig.FirebaseRemoteConfig.SetDefaults(defaults);
         return Firebase.RemoteConfig.FirebaseRemoteConfig.FetchAsync(System.TimeSpan.Zero);
@@ -46,19 +125,19 @@ public class Prediction_Scene : MonoBehaviour {
     void get_fixtures_from_firebase()
     {
         List<string> Fixtures = new List<string>();
-        print("Fixtures: " + Fixtures);
-        // For testing:
-        Fixtures.Add("ARSVMCI TIME1500 DATE01072018");
-        Fixtures.Add("BOUVBRH TIME1730 DATE02072018");
-        Fixtures.Add("HDDVCHE TIME1500 DATE04072018");
-        Fixtures.Add("WHUVWAT TIME1500 DATE04072018");
-        Fixtures.Add("TOTVLIV TIME1500 DATE04072018");
-        Fixtures.Add("MUNVSOU TIME1500 DATE04072018");
-        Fixtures.Add("CRYVLEI TIME1500 DATE04072018");
 
 
+        // Check firebase for updates
         Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_1").StringValue);
         Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_2").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_3").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_4").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_5").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_6").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_7").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_8").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_9").StringValue);
+        Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_10").StringValue);
 
 
         // Set up scene
@@ -76,7 +155,7 @@ public class Prediction_Scene : MonoBehaviour {
             print("now date: " + DateTime.Now.Day + "/" + DateTime.Now.Month);
             print("fix date: " + fix_date.Day + "/" + fix_date.Month);
             // Check that fixture is within 5 days
-            if(DateTime.Compare(DateTime.Now.AddDays(5), fix_date) > 0)
+            if(DateTime.Compare(DateTime.Now.AddDays(150), fix_date) > 0)
             {
                 print("PASSED CHECK ONE");
                 // Check fixture is not in the past
@@ -110,7 +189,13 @@ public class Prediction_Scene : MonoBehaviour {
         //Set ko time and date
         prediction_instance.GetComponent<Prediction_button>().update_ko_time_text(ko_date);
 
+    }
 
+    private void add_prediciton_button()
+    {
+        GameObject prediction_button_instance;
+        prediction_button_instance = Instantiate(_submit_prediction_button);
+        prediction_button_instance.transform.parent = _prediction_content.transform;
     }
 
 

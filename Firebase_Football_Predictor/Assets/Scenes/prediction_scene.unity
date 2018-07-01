@@ -415,22 +415,22 @@ Prefab:
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 480
       objectReference: {fileID: 0}
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -150
       objectReference: {fileID: 0}
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 960
       objectReference: {fileID: 0}
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
@@ -440,7 +440,7 @@ Prefab:
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
@@ -450,7 +450,7 @@ Prefab:
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 224149033060064834, guid: 25619785d8149984f99aad4fa1ec53fe,
         type: 2}
@@ -461,6 +461,10 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1369517322571622, guid: 25619785d8149984f99aad4fa1ec53fe, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 25619785d8149984f99aad4fa1ec53fe, type: 2}
@@ -1270,6 +1274,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prediction_content: {fileID: 1776523507}
   _prediction_score_template: {fileID: 1369517322571622, guid: 25619785d8149984f99aad4fa1ec53fe,
+    type: 2}
+  _submit_prediction_button: {fileID: 1904921831108880, guid: 27b2307b5fd3a104ba1c9003218452a0,
     type: 2}
 --- !u!1 &812166110
 GameObject:
