@@ -152,16 +152,12 @@ public class Prediction_Scene : MonoBehaviour {
                                     Int32.Parse(fixture.Substring(12,2)),  // hour
                                     Int32.Parse(fixture.Substring(14,2)),  // minute
                                     0);                                    // second
-            print("now date: " + DateTime.Now.Day + "/" + DateTime.Now.Month);
-            print("fix date: " + fix_date.Day + "/" + fix_date.Month);
             // Check that fixture is within 5 days
             if(DateTime.Compare(DateTime.Now.AddDays(150), fix_date) > 0)
             {
-                print("PASSED CHECK ONE");
                 // Check fixture is not in the past
                 if(DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
                 {
-                    print("PASSED CHECK TWO");
                     // If fixture not in past and is within x days than format in scene
                     create_fixture_UI(fix_date,
                                       fixture.Substring(0, 3),
@@ -175,7 +171,6 @@ public class Prediction_Scene : MonoBehaviour {
 
     private void create_fixture_UI(DateTime ko_date, String home_team, String away_team)
     {
-        print("Creating fixture UI");
 
         // Make instance of prediction
         GameObject prediction_instance = Instantiate(_prediction_score_template);
