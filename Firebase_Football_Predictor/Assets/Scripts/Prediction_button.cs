@@ -14,25 +14,43 @@ public class Prediction_button : MonoBehaviour {
 
     public int user_prediction_home_score;
     public int user_prediction_away_score;
-
+    public Button button_home_score_increase;
+    public Button button_home_score_decrease;
+    public Button button_away_score_increase;
+    public Button button_away_score_decrease;
 
     public Text home_team_text;
     public Text away_team_text;
     public Text ko_date_text;
     public Text ko_time_text;
-    public Text user_prediction_home_score_text;
-    public Text user_prediction_away_score_text;
+    //public Text user_prediction_home_score_text;
+    //public Text user_prediction_away_score_text;
+    public InputField user_prediction_home_score_text;
+    public InputField user_prediction_away_score_text;
 
     // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    void Start ()
     {
+        user_prediction_home_score = 0;
+        user_prediction_away_score = 0;
+        user_prediction_home_score_text.text = user_prediction_home_score.ToString();
+        user_prediction_away_score_text.text = user_prediction_away_score.ToString();
+
+        // Ad listeners to buttons
+        button_home_score_increase.onClick.AddListener(increase_home_score);
+        button_home_score_decrease.onClick.AddListener(decrease_home_score);
+        button_away_score_increase.onClick.AddListener(increase_away_score);
+        button_away_score_decrease.onClick.AddListener(decrease_away_score);
 
     }
+
+    // Update is called once per frame
+    void Update ()
+    {
+
+
+    }
+
 
     public void update_home_team_text(String home_team)
     {
@@ -60,6 +78,37 @@ public class Prediction_button : MonoBehaviour {
     public void update_predicted_away_score(int away_score)
     {
         user_prediction_away_score_text.text = user_prediction_away_score.ToString();
+    }
+
+    public void increase_home_score()
+    {
+        print("increasing_home_score" + user_prediction_home_score);
+        user_prediction_home_score++;
+        user_prediction_home_score_text.text = " " + user_prediction_home_score.ToString();
+    }
+
+    public void decrease_home_score()
+    {
+        if (user_prediction_home_score > 0)
+        {
+            user_prediction_home_score--;
+            user_prediction_home_score_text.text = user_prediction_home_score.ToString();
+        }
+    }
+
+    public void increase_away_score()
+    {
+        user_prediction_away_score++;
+        user_prediction_away_score_text.text = user_prediction_away_score.ToString();
+    }
+
+    public void decrease_away_score()
+    {
+        if(user_prediction_away_score > 0)
+        {
+            user_prediction_away_score--;
+            user_prediction_away_score_text.text = user_prediction_away_score.ToString();
+        }
     }
 
     private String lookup_full_team_name(String team_abv)

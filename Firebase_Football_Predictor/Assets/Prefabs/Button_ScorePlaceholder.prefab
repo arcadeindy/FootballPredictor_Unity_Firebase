@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 222644628526428960}
   - component: {fileID: 114214611425144444}
   m_Layer: 5
-  m_Name: AwayTeam_text (1)
+  m_Name: AwayTeam_text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -493,7 +493,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114287249464019210}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114119867311158856
@@ -585,7 +596,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1369517322571622}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
@@ -817,7 +828,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 88
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 8
     m_MaxSize: 88
     m_Alignment: 4
@@ -909,12 +920,16 @@ MonoBehaviour:
   match_id: 0
   user_prediction_home_score: 0
   user_prediction_away_score: 0
+  button_home_score_increase: {fileID: 114053026220539012}
+  button_home_score_decrease: {fileID: 114758832608449350}
+  button_away_score_increase: {fileID: 114550582444686738}
+  button_away_score_decrease: {fileID: 114984153129397984}
   home_team_text: {fileID: 114614409620111930}
   away_team_text: {fileID: 114214611425144444}
   ko_date_text: {fileID: 114930975513634592}
   ko_time_text: {fileID: 114154937073540750}
-  user_prediction_home_score_text: {fileID: 114418865086411632}
-  user_prediction_away_score_text: {fileID: 114295721580240132}
+  user_prediction_home_score_text: {fileID: 114415753251891582}
+  user_prediction_away_score_text: {fileID: 114899807818178806}
 --- !u!114 &114415753251891582
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1001,8 +1016,8 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 88
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 8
+    m_BestFit: 1
+    m_MinSize: 4
     m_MaxSize: 88
     m_Alignment: 4
     m_AlignByGeometry: 0
