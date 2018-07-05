@@ -23,22 +23,10 @@ using UnityEngine.UI;
 // Handler for UI buttons on the scene.  Also performs some
 // necessary setup (initializing the firebase app, etc) on
 // startup.
+public class UIHandler : MonoBehaviour
+{
 
-public class UserScene : MonoBehaviour {
-
-        //If user not signed in then add option to sign up!
-
-        // Once signed up unlock all other scenes...
-
-        // If user signed in then give option to sign out
-        // and other buttons to modify email password etc
-
-        // When the app starts, check to make sure that we have
-        // the required dependencies to use Firebase, and if not,
-        // add them if possible.
-
-
-     protected Firebase.Auth.FirebaseAuth auth;
+    protected Firebase.Auth.FirebaseAuth auth;
     protected Firebase.Auth.FirebaseAuth otherAuth;
     protected Dictionary<string, Firebase.Auth.FirebaseUser> userByAuth =
       new Dictionary<string, Firebase.Auth.FirebaseUser>();
@@ -686,10 +674,6 @@ public class UserScene : MonoBehaviour {
                                otherAuth.App.Name, auth.App.Name));
     }
 
-    /// <summary>
-    /// //////////////////////////////////////////////////////////////////////
-    /// </summary>
-
     // Render the log output in a scroll view.
     void GUIDisplayLog()
     {
@@ -705,7 +689,6 @@ public class UserScene : MonoBehaviour {
         {
             controlsScrollViewVector =
                 GUILayout.BeginScrollView(controlsScrollViewVector);
-
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
             GUILayout.Label("Email:", GUILayout.Width(Screen.width * 0.20f));
@@ -729,28 +712,28 @@ public class UserScene : MonoBehaviour {
 
             GUILayout.Space(20);
 
-            //GUILayout.BeginHorizontal();
-            //GUILayout.Label("Phone Number:", GUILayout.Width(Screen.width * 0.20f));
-            //phoneNumber = GUILayout.TextField(phoneNumber);
-            //GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Phone Number:", GUILayout.Width(Screen.width * 0.20f));
+            phoneNumber = GUILayout.TextField(phoneNumber);
+            GUILayout.EndHorizontal();
 
-            //GUILayout.Space(20);
+            GUILayout.Space(20);
 
-            //GUILayout.BeginHorizontal();
-            //GUILayout.Label("Phone Auth Received Code:", GUILayout.Width(Screen.width * 0.20f));
-            //receivedCode = GUILayout.TextField(receivedCode);
-            //GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Phone Auth Received Code:", GUILayout.Width(Screen.width * 0.20f));
+            receivedCode = GUILayout.TextField(receivedCode);
+            GUILayout.EndHorizontal();
 
-            //GUILayout.Space(20);
+            GUILayout.Space(20);
 
             if (GUILayout.Button("Create User"))
             {
                 CreateUserWithEmailAsync();
             }
-            //if (GUILayout.Button("Sign In Anonymously"))
-            //{
-            //    SigninAnonymouslyAsync();
-            //}
+            if (GUILayout.Button("Sign In Anonymously"))
+            {
+                SigninAnonymouslyAsync();
+            }
             if (GUILayout.Button("Sign In With Email"))
             {
                 SigninWithEmailAsync();
@@ -759,30 +742,30 @@ public class UserScene : MonoBehaviour {
             {
                 SigninWithEmailCredentialAsync();
             }
-            //if (GUILayout.Button("Link With Email Credential"))
-            //{
-            //    LinkWithEmailCredentialAsync();
-            //}
-            //if (GUILayout.Button("Reauthenticate with Email"))
-            //{
-            //    ReauthenticateAsync();
-            //}
-            //if (GUILayout.Button("Reload User"))
-            //{
-            //    ReloadUser();
-            //}
-            //if (GUILayout.Button("Get User Token"))
-            //{
-            //    GetUserToken();
-            //}
-            //if (GUILayout.Button("Get User Info"))
-            //{
-            //    GetUserInfo();
-            //}
-            //if (GUILayout.Button("Unlink Email Credential"))
-            //{
-            //    UnlinkEmailAsync();
-            //}
+            if (GUILayout.Button("Link With Email Credential"))
+            {
+                LinkWithEmailCredentialAsync();
+            }
+            if (GUILayout.Button("Reauthenticate with Email"))
+            {
+                ReauthenticateAsync();
+            }
+            if (GUILayout.Button("Reload User"))
+            {
+                ReloadUser();
+            }
+            if (GUILayout.Button("Get User Token"))
+            {
+                GetUserToken();
+            }
+            if (GUILayout.Button("Get User Info"))
+            {
+                GetUserInfo();
+            }
+            if (GUILayout.Button("Unlink Email Credential"))
+            {
+                UnlinkEmailAsync();
+            }
             if (GUILayout.Button("Sign Out"))
             {
                 SignOut();
@@ -791,22 +774,22 @@ public class UserScene : MonoBehaviour {
             {
                 DeleteUserAsync();
             }
-            //if (GUILayout.Button("Show Providers For Email"))
-            //{
-            //    DisplayProvidersForEmail();
-            //}
+            if (GUILayout.Button("Show Providers For Email"))
+            {
+                DisplayProvidersForEmail();
+            }
             if (GUILayout.Button("Password Reset Email"))
             {
                 SendPasswordResetEmail();
             }
-            //if (GUILayout.Button("Authenicate Phone Number"))
-            //{
-            //    VerifyPhoneNumber();
-            //}
-            //if (GUILayout.Button("Verify Received Phone Code"))
-            //{
-            //    VerifyReceivedPhoneCode();
-            //}
+            if (GUILayout.Button("Authenicate Phone Number"))
+            {
+                VerifyPhoneNumber();
+            }
+            if (GUILayout.Button("Verify Received Phone Code"))
+            {
+                VerifyReceivedPhoneCode();
+            }
             if (GUILayout.Button(String.Format("Fetch Profile on Sign-in {0}",
                                                signInAndFetchProfile ?
                                                  "Enabled" : "Disabled")))
@@ -830,9 +813,7 @@ public class UserScene : MonoBehaviour {
     // Render the GUI:
     void OnGUI()
     {
-        // I dont have a gui skin
         GUI.skin = fb_GUISkin;
-
         if (dependencyStatus != Firebase.DependencyStatus.Available)
         {
             GUILayout.Label("One or more Firebase dependencies are not present.");
@@ -843,9 +824,9 @@ public class UserScene : MonoBehaviour {
 
         if (Screen.width < Screen.height)
         {
-            // Portrait mode - should always be portrait mode
-            controlArea = new Rect(0.0f, 0.0f, Screen.width, Screen.height * 0.70f);
-            logArea = new Rect(0.0f, Screen.height * 0.70f, Screen.width, Screen.height * 0.95f);
+            // Portrait mode
+            controlArea = new Rect(0.0f, 0.0f, Screen.width, Screen.height * 0.5f);
+            logArea = new Rect(0.0f, Screen.height * 0.5f, Screen.width, Screen.height * 0.5f);
         }
         else
         {
