@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Firebase.RemoteConfig;
 using System;
+using football_predictor;
 
 public class Prediction_Scene : MonoBehaviour {
 
@@ -125,6 +126,8 @@ public class Prediction_Scene : MonoBehaviour {
     void get_fixtures_from_firebase()
     {
         List<string> Fixtures = new List<string>();
+        List<fixture_class> C_Fixtures = new List<fixture_class>();
+
 
 
         // Check firebase for updates
@@ -158,13 +161,29 @@ public class Prediction_Scene : MonoBehaviour {
                 // Check fixture is not in the past
                 if(DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
                 {
+                    fixture_class temp_fix = new fixture_class();
+                    temp_fix.fixture_date = fix_date;
+                    temp_fix.home_team = fixture.Substring(0, 3);
+                    temp_fix.away_team = fixture.Substring(4, 3);
+                    C_Fixtures.Add(temp_fix);
                     // If fixture not in past and is within x days than format in scene
-                    create_fixture_UI(fix_date,
-                                      fixture.Substring(0, 3),
-                                      fixture.Substring(4, 3));
+                    //create_fixture_UI(fix_date,
+                    //                  fixture.Substring(0, 3),
+                    //                  fixture.Substring(4, 3));
                 }
 
             }
+        }
+
+        // Sort fixtures by date
+        C_Fixtures.Sort((x, y) => DateTime.Compare(x.fixture_date, y.fixture_date));
+
+        // Create fixture UI
+        foreach(fixture_class fix in C_Fixtures)
+        {
+            create_fixture_UI(fix.fixture_date,
+                              fix.home_team,
+                              fix.away_team);
         }
 
     }
