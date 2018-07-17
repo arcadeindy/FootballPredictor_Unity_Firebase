@@ -8,75 +8,27 @@ using football_predictor;
 public class Prediction_Scene : MonoBehaviour
 {
 
-
     public GameObject _prediction_content;
     public GameObject _prediction_score_template;
     public GameObject _submit_prediction_button;
     public GameObject _footer_button;
 
 
-    //Dictionary<string, object> defaults = new Dictionary<string, object>();
-
     // Use this for initialization
     void Start()
     {
-
-        //Screen.SetResolution(Screen.width / 2, Screen.height / 2, true);
-        //GooglePlayServicesSignIn.InitializeGooglePlayGames();
-        //InitializeFirebaseAndStart();
-
-
+        // Starts the scene
         StartGame();
     }
 
-    // When the app starts, check to make sure that we have
-    // the required dependencies to use Firebase, and if not,
-    // add them if possible.
-    //void InitializeFirebaseAndStart()
-    //{
-    //    Firebase.DependencyStatus dependencyStatus = Firebase.FirebaseApp.CheckDependencies();
-
-    //    if (dependencyStatus != Firebase.DependencyStatus.Available)
-    //    {
-    //        Firebase.FirebaseApp.FixDependenciesAsync().ContinueWith(task => {
-    //            dependencyStatus = Firebase.FirebaseApp.CheckDependencies();
-    //            if (dependencyStatus == Firebase.DependencyStatus.Available)
-    //            {
-    //                InitializeFirebaseComponents();
-    //            }
-    //            else
-    //            {
-    //                Debug.LogError(
-    //                    "Could not resolve all Firebase dependencies: " + dependencyStatus);
-    //                Application.Quit();
-    //            }
-    //        });
-    //    }
-    //    else
-    //    {
-    //        InitializeFirebaseComponents();
-    //    }
-    //}
-
-    //void InitializeFirebaseComponents()
-    //{
-    //    Debug.LogError("InitializeFirebaseComponents...");
-    //    System.Threading.Tasks.Task.WhenAll(
-    //        InitializeRemoteConfig()
-    //      ).ContinueWith(task => { StartGame(); });
-    //}
 
     void StartGame()
     {
-        Debug.LogError("Starting game...");
+        Debug.Log("Starting game...");
 
         // Remote Config data has been fetched, so this applies it for this play session:
         Firebase.RemoteConfig.FirebaseRemoteConfig.ActivateFetched();
         Firebase.AppOptions ops = new Firebase.AppOptions();
-        // CommonData.app = Firebase.FirebaseApp.Create(ops);
-        //  stateManager.PushState(new States.Startup());
-
-
 
         get_fixtures_from_firebase();
         add_prediciton_button();
@@ -88,70 +40,12 @@ public class Prediction_Scene : MonoBehaviour
 
     }
 
-
-    ////Sets the default values for remote config.These are the values that will
-    ////be used if we haven't fetched yet.
-    //System.Threading.Tasks.Task InitializeRemoteConfig()
-    //{
-
-    //    // Adding first match as a test
-    //    // Match ID and Team names and Time and Date
-    //    defaults.Add("Match_1", "ARSVMCI TIME1500 DATE02072018");
-    //    defaults.Add("Match_2", "BOUVBRH TIME1730 DATE02072018");
-    //    defaults.Add("Match_3", "HDDVCHE TIME1500 DATE03072018");
-    //    defaults.Add("Match_4", "WHUVWAT TIME1500 DATE03072018");
-    //    defaults.Add("Match_5", "TOTVLIV TIME1500 DATE03072018");
-    //    defaults.Add("Match_6", "MUNVSOU TIME1500 DATE03072018");
-    //    defaults.Add("Match_7", "CRYVLEI TIME1500 DATE03072018");
-    //    defaults.Add("Match_8", "LIVvNEW TIME1500 DATE03072018");
-    //    defaults.Add("Match_9", "BOUvARS TIME1500 DATE03072018");
-    //    defaults.Add("Match_10", "FULVWLV TIME1500 DATE03072018");
-
-    //    defaults.Add("Match_11", "ARSVMCI TIME1500 DATE02072018");
-    //    defaults.Add("Match_12", "BOUVBRH TIME1730 DATE02072018");
-    //    defaults.Add("Match_13", "HDDVCHE TIME1500 DATE03072018");
-    //    defaults.Add("Match_14", "WHUVWAT TIME1500 DATE03072018");
-    //    defaults.Add("Match_15", "TOTVLIV TIME1500 DATE03072018");
-    //    defaults.Add("Match_16", "MUNVSOU TIME1500 DATE03072018");
-    //    defaults.Add("Match_17", "CRYVLEI TIME1500 DATE03072018");
-    //    defaults.Add("Match_18", "LIVvNEW TIME1500 DATE03072018");
-    //    defaults.Add("Match_19", "BOUvARS TIME1500 DATE03072018");
-    //    defaults.Add("Match_20", "FULVWLV TIME1500 DATE03072018");
-
-    //    defaults.Add("Match_21", "ARSVMCI TIME1500 DATE02072018");
-    //    defaults.Add("Match_22", "BOUVBRH TIME1730 DATE02072018");
-    //    defaults.Add("Match_23", "HDDVCHE TIME1500 DATE03072018");
-    //    defaults.Add("Match_24", "WHUVWAT TIME1500 DATE03072018");
-    //    defaults.Add("Match_25", "TOTVLIV TIME1500 DATE03072018");
-    //    defaults.Add("Match_26", "MUNVSOU TIME1500 DATE03072018");
-    //    defaults.Add("Match_27", "CRYVLEI TIME1500 DATE03072018");
-    //    defaults.Add("Match_28", "LIVvNEW TIME1500 DATE03072018");
-    //    defaults.Add("Match_29", "BOUvARS TIME1500 DATE03072018");
-    //    defaults.Add("Match_30", "FULVWLV TIME1500 DATE03072018");
-
-    //    defaults.Add("Match_31", "ARSVMCI TIME1500 DATE02072018");
-    //    defaults.Add("Match_32", "BOUVBRH TIME1730 DATE02072018");
-    //    defaults.Add("Match_33", "HDDVCHE TIME1500 DATE03072018");
-    //    defaults.Add("Match_34", "WHUVWAT TIME1500 DATE03072018");
-    //    defaults.Add("Match_35", "TOTVLIV TIME1500 DATE03072018");
-    //    defaults.Add("Match_36", "MUNVSOU TIME1500 DATE03072018");
-    //    defaults.Add("Match_37", "CRYVLEI TIME1500 DATE03072018");
-    //    defaults.Add("Match_38", "LIVvNEW TIME1500 DATE03072018");
-    //    defaults.Add("Match_39", "BOUvARS TIME1500 DATE03072018");
-    //    defaults.Add("Match_40", "FULVWLV TIME1500 DATE03072018");
-
-    //    Firebase.RemoteConfig.FirebaseRemoteConfig.SetDefaults(defaults);
-    //    return Firebase.RemoteConfig.FirebaseRemoteConfig.FetchAsync(System.TimeSpan.Zero);
-    //}
-
     void get_fixtures_from_firebase()
     {
-        Debug.LogError("In: get_fixtures_from_firebase");
+        Debug.Log("In: get_fixtures_from_firebase");
 
         List<string> Fixtures = new List<string>();
         List<fixture_class> C_Fixtures = new List<fixture_class>();
-
-
 
         // Check firebase for updates
         Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_1").StringValue);
@@ -222,10 +116,6 @@ public class Prediction_Scene : MonoBehaviour
                     temp_fix.home_team = fixture.Substring(0, 3);
                     temp_fix.away_team = fixture.Substring(4, 3);
                     C_Fixtures.Add(temp_fix);
-                    // If fixture not in past and is within x days than format in scene
-                    //create_fixture_UI(fix_date,
-                    //                  fixture.Substring(0, 3),
-                    //                  fixture.Substring(4, 3));
                 }
 
             }
@@ -252,7 +142,6 @@ public class Prediction_Scene : MonoBehaviour
         GameObject prediction_instance = Instantiate(_prediction_score_template);
 
         // Create prediction as child of scroll view content object
-        //prediction_instance.transform.parent = _prediction_content.transform;
         prediction_instance.transform.SetParent(_prediction_content.transform, false);
 
         // Set team names
@@ -267,7 +156,6 @@ public class Prediction_Scene : MonoBehaviour
     {
         GameObject prediction_button_instance;
         prediction_button_instance = Instantiate(_submit_prediction_button);
-        //prediction_button_instance.transform.parent = _prediction_content.transform;
         prediction_button_instance.transform.SetParent(_prediction_content.transform, false);
 
         GameObject _footer_instance;
@@ -275,7 +163,5 @@ public class Prediction_Scene : MonoBehaviour
         _footer_instance.transform.SetParent(_prediction_content.transform, false);
 
     }
-
-
 
 }
