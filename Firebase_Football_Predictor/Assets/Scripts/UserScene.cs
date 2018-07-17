@@ -38,10 +38,10 @@ public class UserScene : MonoBehaviour {
         // add them if possible.
 
 
-     protected Firebase.Auth.FirebaseAuth auth;
+    protected Firebase.Auth.FirebaseAuth auth;
     protected Firebase.Auth.FirebaseAuth otherAuth;
     protected Dictionary<string, Firebase.Auth.FirebaseUser> userByAuth =
-      new Dictionary<string, Firebase.Auth.FirebaseUser>();
+    new Dictionary<string, Firebase.Auth.FirebaseUser>();
 
     public GUISkin fb_GUISkin;
     private string logText = "";
@@ -67,6 +67,11 @@ public class UserScene : MonoBehaviour {
     private uint phoneAuthTimeoutMs = 60 * 1000;
     // The verification id needed along with the sent code for phone authentication.
     private string phoneAuthVerificationId;
+
+
+    // ALAN
+    Dictionary<string, object> defaults = new Dictionary<string, object>();
+
 
     // Options used to setup secondary authentication object.
     private Firebase.AppOptions otherAuthOptions = new Firebase.AppOptions
@@ -124,6 +129,72 @@ public class UserScene : MonoBehaviour {
             }
         }
         AuthStateChanged(this, null);
+
+        // Initialise remote config
+        Debug.Log("InitializeFirebaseComponents...");
+        System.Threading.Tasks.Task.WhenAll(
+            InitializeRemoteConfig()
+          ).ContinueWith(task => { StartGame(); });
+    }
+
+    private void StartGame()
+    {
+
+    }
+
+    //Sets the default values for remote config.These are the values that will
+    //be used if we haven't fetched yet.
+    System.Threading.Tasks.Task InitializeRemoteConfig()
+    {
+
+        // Adding first match as a test
+        // Match ID and Team names and Time and Date
+        defaults.Add("Match_1", "ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_2", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_3", "HDDVCHE TIME1500 DATE03072018");
+        defaults.Add("Match_4", "WHUVWAT TIME1500 DATE03072018");
+        defaults.Add("Match_5", "TOTVLIV TIME1500 DATE03072018");
+        defaults.Add("Match_6", "MUNVSOU TIME1500 DATE03072018");
+        defaults.Add("Match_7", "CRYVLEI TIME1500 DATE03072018");
+        defaults.Add("Match_8", "LIVvNEW TIME1500 DATE03072018");
+        defaults.Add("Match_9", "BOUvARS TIME1500 DATE03072018");
+        defaults.Add("Match_10", "FULVWLV TIME1500 DATE03072018");
+
+        defaults.Add("Match_11", "ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_12", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_13", "HDDVCHE TIME1500 DATE03072018");
+        defaults.Add("Match_14", "WHUVWAT TIME1500 DATE03072018");
+        defaults.Add("Match_15", "TOTVLIV TIME1500 DATE03072018");
+        defaults.Add("Match_16", "MUNVSOU TIME1500 DATE03072018");
+        defaults.Add("Match_17", "CRYVLEI TIME1500 DATE03072018");
+        defaults.Add("Match_18", "LIVvNEW TIME1500 DATE03072018");
+        defaults.Add("Match_19", "BOUvARS TIME1500 DATE03072018");
+        defaults.Add("Match_20", "FULVWLV TIME1500 DATE03072018");
+
+        defaults.Add("Match_21", "ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_22", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_23", "HDDVCHE TIME1500 DATE03072018");
+        defaults.Add("Match_24", "WHUVWAT TIME1500 DATE03072018");
+        defaults.Add("Match_25", "TOTVLIV TIME1500 DATE03072018");
+        defaults.Add("Match_26", "MUNVSOU TIME1500 DATE03072018");
+        defaults.Add("Match_27", "CRYVLEI TIME1500 DATE03072018");
+        defaults.Add("Match_28", "LIVvNEW TIME1500 DATE03072018");
+        defaults.Add("Match_29", "BOUvARS TIME1500 DATE03072018");
+        defaults.Add("Match_30", "FULVWLV TIME1500 DATE03072018");
+
+        defaults.Add("Match_31", "ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_32", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_33", "HDDVCHE TIME1500 DATE03072018");
+        defaults.Add("Match_34", "WHUVWAT TIME1500 DATE03072018");
+        defaults.Add("Match_35", "TOTVLIV TIME1500 DATE03072018");
+        defaults.Add("Match_36", "MUNVSOU TIME1500 DATE03072018");
+        defaults.Add("Match_37", "CRYVLEI TIME1500 DATE03072018");
+        defaults.Add("Match_38", "LIVvNEW TIME1500 DATE03072018");
+        defaults.Add("Match_39", "BOUvARS TIME1500 DATE03072018");
+        defaults.Add("Match_40", "FULVWLV TIME1500 DATE03072018");
+
+        Firebase.RemoteConfig.FirebaseRemoteConfig.SetDefaults(defaults);
+        return Firebase.RemoteConfig.FirebaseRemoteConfig.FetchAsync(System.TimeSpan.Zero);
     }
 
     // Exit if escape (or back, on mobile) is pressed.
@@ -844,8 +915,9 @@ public class UserScene : MonoBehaviour {
         if (Screen.width < Screen.height)
         {
             // Portrait mode - should always be portrait mode
-            controlArea = new Rect(0.0f, 0.0f, Screen.width, Screen.height * 0.70f);
-            logArea = new Rect(0.0f, Screen.height * 0.70f, Screen.width, Screen.height * 0.95f);
+
+            controlArea = new Rect(0.0f, Screen.height*0.25f, Screen.width, Screen.height * 0.70f);
+            logArea = new Rect(0.0f, Screen.height * 0.90f, Screen.width, Screen.height * 0.95f);
         }
         else
         {
