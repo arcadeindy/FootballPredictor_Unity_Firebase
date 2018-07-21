@@ -60,7 +60,11 @@ public class UserScene : MonoBehaviour {
     // iOS simulators.
     public bool usePasswordInput = false;
     private Vector2 controlsScrollViewVector = Vector2.zero;
+    private Vector2 LogScrollViewVector = Vector2.zero;
+
     private Vector2 scrollViewVector = Vector2.zero;
+    private Vector2 LogViewVector = Vector2.zero;
+
     bool UIEnabled = true;
 
     // Set the phone authentication timeout to a minute.
@@ -233,14 +237,15 @@ public class UserScene : MonoBehaviour {
     public void DebugLog(string s)
     {
         Debug.Log(s);
-        logText += s + "\n";
+        logText += s + "\n" + "\n";
 
         while (logText.Length > kMaxLogSize)
         {
             int index = logText.IndexOf("\n");
             logText = logText.Substring(index + 1);
         }
-        scrollViewVector.y = int.MaxValue;
+        //scrollViewVector.y = int.MaxValue;
+        LogScrollViewVector.y = int.MaxValue;
     }
 
     // Display additional user profile information.
@@ -764,8 +769,15 @@ public class UserScene : MonoBehaviour {
     // Render the log output in a scroll view.
     void GUIDisplayLog()
     {
-        scrollViewVector = GUILayout.BeginScrollView(scrollViewVector);
+        LogScrollViewVector =
+            GUILayout.BeginScrollView(LogScrollViewVector);
+        GUILayout.BeginVertical();
+
+        //LogViewVector = GUILayout.BeginScrollView(LogViewVector);
         GUILayout.Label(logText);
+        //GUILayout.EndScrollView();
+
+        GUILayout.EndVertical();
         GUILayout.EndScrollView();
     }
 
@@ -775,28 +787,36 @@ public class UserScene : MonoBehaviour {
         if (UIEnabled)
         {
             controlsScrollViewVector =
-                GUILayout.BeginScrollView(controlsScrollViewVector);
+            GUILayout.BeginScrollView(controlsScrollViewVector);
 
             GUILayout.BeginVertical();
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Email:", GUILayout.Width(Screen.width * 0.20f));
-            email = GUILayout.TextField(email);
-            GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal();
+
+
+            GUILayout.Label("Email:",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f));
+            email = GUILayout.TextField(email,
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f));
+            //GUILayout.EndHorizontal();
 
             GUILayout.Space(20);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Password:", GUILayout.Width(Screen.width * 0.20f));
+            //GUILayout.BeginHorizontal();
+            GUILayout.Label("Password:",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f));
             password = usePasswordInput ? GUILayout.PasswordField(password, '*') :
-                GUILayout.TextField(password);
-            GUILayout.EndHorizontal();
+                GUILayout.TextField(password,
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f));
+            //GUILayout.EndHorizontal();
 
             GUILayout.Space(20);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Display Name:", GUILayout.Width(Screen.width * 0.20f));
-            displayName = GUILayout.TextField(displayName);
-            GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal();
+            GUILayout.Label("Display Name:",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f));
+            displayName = GUILayout.TextField(displayName,
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f));
+            //GUILayout.EndHorizontal();
 
             GUILayout.Space(20);
 
@@ -814,7 +834,8 @@ public class UserScene : MonoBehaviour {
 
             //GUILayout.Space(20);
 
-            if (GUILayout.Button("Create User"))
+            if (GUILayout.Button("Create User",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f)))
             {
                 CreateUserWithEmailAsync();
             }
@@ -822,14 +843,17 @@ public class UserScene : MonoBehaviour {
             //{
             //    SigninAnonymouslyAsync();
             //}
-            if (GUILayout.Button("Sign In With Email"))
+            if (GUILayout.Button("Sign In With Email",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f)))
             {
                 SigninWithEmailAsync();
             }
-            if (GUILayout.Button("Sign In With Email Credential"))
-            {
-                SigninWithEmailCredentialAsync();
-            }
+
+            //if (GUILayout.Button("Sign In With Email Credential")) // should probably put in
+            //{
+            //    SigninWithEmailCredentialAsync();
+            //}
+
             //if (GUILayout.Button("Link With Email Credential"))
             //{
             //    LinkWithEmailCredentialAsync();
@@ -854,11 +878,13 @@ public class UserScene : MonoBehaviour {
             //{
             //    UnlinkEmailAsync();
             //}
-            if (GUILayout.Button("Sign Out"))
+            if (GUILayout.Button("Sign Out",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f)))
             {
                 SignOut();
             }
-            if (GUILayout.Button("Delete User"))
+            if (GUILayout.Button("Delete User",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f)))
             {
                 DeleteUserAsync();
             }
@@ -866,7 +892,8 @@ public class UserScene : MonoBehaviour {
             //{
             //    DisplayProvidersForEmail();
             //}
-            if (GUILayout.Button("Password Reset Email"))
+            if (GUILayout.Button("Password Reset Email",
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f)))
             {
                 SendPasswordResetEmail();
             }
@@ -880,7 +907,8 @@ public class UserScene : MonoBehaviour {
             //}
             if (GUILayout.Button(String.Format("Fetch Profile on Sign-in {0}",
                                                signInAndFetchProfile ?
-                                                 "Enabled" : "Disabled")))
+                                                 "Enabled" : "Disabled"),
+                            GUILayout.Width(Screen.width * 0.90f), GUILayout.Height(Screen.height * 0.05f)))
             {
                 signInAndFetchProfile = !signInAndFetchProfile;
             }
@@ -889,6 +917,8 @@ public class UserScene : MonoBehaviour {
             {
                 SwapAuthFocus();
             }
+
+
             GUIDisplayCustomControls();
             GUILayout.EndVertical();
             GUILayout.EndScrollView();
@@ -902,7 +932,11 @@ public class UserScene : MonoBehaviour {
     void OnGUI()
     {
         // I dont have a gui skin
-        GUI.skin = fb_GUISkin;
+        // GUI.skin = fb_GUISkin;
+        GUI.skin.label.fontSize = 50;
+        GUI.skin.button.fontSize = 50;
+        GUI.skin.textField.fontSize = 45;
+        GUI.contentColor = Color.black; // change the font colour
 
         if (dependencyStatus != Firebase.DependencyStatus.Available)
         {
@@ -916,8 +950,13 @@ public class UserScene : MonoBehaviour {
         {
             // Portrait mode - should always be portrait mode
 
-            controlArea = new Rect(0.0f, Screen.height*0.25f, Screen.width, Screen.height * 0.70f);
-            logArea = new Rect(0.0f, Screen.height * 0.90f, Screen.width, Screen.height * 0.95f);
+            float control_start_ratio = 0.25f;
+            float control_end_ratio = 0.50f;
+            float log_size;
+            log_size = control_start_ratio + control_end_ratio;
+
+            controlArea = new Rect(0.0f, Screen.height* control_start_ratio, Screen.width, Screen.height * control_end_ratio);
+            logArea = new Rect(0.0f, Screen.height * log_size, Screen.width, Screen.height * 0.95f);
         }
         else
         {
@@ -925,6 +964,7 @@ public class UserScene : MonoBehaviour {
             controlArea = new Rect(0.0f, 0.0f, Screen.width * 0.5f, Screen.height);
             logArea = new Rect(Screen.width * 0.5f, 0.0f, Screen.width * 0.5f, Screen.height);
         }
+
 
         GUILayout.BeginArea(logArea);
         GUIDisplayLog();

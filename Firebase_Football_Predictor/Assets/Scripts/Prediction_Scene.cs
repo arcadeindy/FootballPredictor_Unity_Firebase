@@ -106,7 +106,7 @@ public class Prediction_Scene : MonoBehaviour
                                     Int32.Parse(fixture.Substring(14, 2)),  // minute
                                     0);                                    // second
             // Check that fixture is within 5 days
-            if (DateTime.Compare(DateTime.Now.AddDays(150), fix_date) > 0)
+            if (DateTime.Compare(DateTime.Now.AddDays(25), fix_date) > 0)
             {
                 // Check fixture is not in the past
                 if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
