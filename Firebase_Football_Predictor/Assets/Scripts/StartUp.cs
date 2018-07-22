@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase;
+using Firebase.Database;
+using Firebase.Unity.Editor;
 
 public class StartUp : MonoBehaviour {
 
@@ -94,10 +97,16 @@ public class StartUp : MonoBehaviour {
     // Handle initialization of the necessary firebase modules:
     protected void InitializeFirebase()
     {
+//#if UNITY_EDITOR
+//        FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
+//#endif
+
         Debug.Log("Setting up Firebase Auth");
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
         auth.StateChanged += AuthStateChanged;
         auth.IdTokenChanged += IdTokenChanged;
+        // needed for testing database in unity editor
+
         // Specify valid options to construct a secondary authentication object.
         if (otherAuthOptions != null &&
             !(String.IsNullOrEmpty(otherAuthOptions.ApiKey) ||
@@ -125,7 +134,8 @@ public class StartUp : MonoBehaviour {
           ).ContinueWith(task => { StartGame(); });
     }
 
-    void StartGame()
+
+        void StartGame()
     {
         var user = auth.CurrentUser;
         if (user != null)
@@ -148,8 +158,8 @@ public class StartUp : MonoBehaviour {
 
         // Adding first match as a test
         // Match ID and Team names and Time and Date
-        defaults.Add("Match_1", "ARSVMCI TIME1500 DATE02072018");
-        defaults.Add("Match_2", "BOUVBRH TIME1730 DATE02072018");
+        defaults.Add("Match_1", "0001 ARSVMCI TIME1500 DATE02072018");
+        defaults.Add("Match_2", "0001 BOUVBRH TIME1730 DATE02072018");
         defaults.Add("Match_3", "HDDVCHE TIME1500 DATE03072018");
         defaults.Add("Match_4", "WHUVWAT TIME1500 DATE03072018");
         defaults.Add("Match_5", "TOTVLIV TIME1500 DATE03072018");

@@ -21,13 +21,13 @@ public class scene_manager : MonoBehaviour {
     public void load_prediction_scene()
     {
         SceneManager.LoadScene("prediction_scene");
-        // add an advertisement
+        // add an advertisement?
     }
 
     public void load_user_scene()
     {
         SceneManager.LoadScene("user_scene");
-        // add an advertisement
+        // add an advertisement?
     }
 
     public void load_welcome_scene()

@@ -4,6 +4,10 @@ using UnityEngine;
 using Firebase.RemoteConfig;
 using System;
 using football_predictor;
+using Firebase;
+using Firebase.Database;
+using Firebase.Unity.Editor;
+using UnityEngine.UI;
 
 public class Prediction_Scene : MonoBehaviour
 {
@@ -13,12 +17,44 @@ public class Prediction_Scene : MonoBehaviour
     public GameObject _submit_prediction_button;
     public GameObject _footer_button;
 
+    private DatabaseReference _prediction_database;
+
+    protected Firebase.Auth.FirebaseAuth auth;
 
     // Use this for initialization
     void Start()
     {
+        // needed for testing database in unity editor
+#if (UNITY_EDITOR)
+
+        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
+            var dependencyStatus = task.Result;
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            {
+                // Set a flag here indiciating that Firebase is ready to use by your
+                // application.
+                Debug.Log("firebase ready to use");
+            }
+            else
+            {
+                UnityEngine.Debug.LogError(System.String.Format(
+                  "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
+                // Firebase Unity SDK is not safe to use here.
+            }
+        });
+
+        Debug.Log("Setting up firebase database for editor");
+        FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
+#endif
+        // Get user from authentication
+        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+
+        // Get the root reference location of the database.
+        //_prediction_database = FirebaseDatabase.DefaultInstance.RootReference;
+
         // Starts the scene
         StartGame();
+
     }
 
 
@@ -32,12 +68,6 @@ public class Prediction_Scene : MonoBehaviour
 
         get_fixtures_from_firebase();
         add_prediciton_button();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void get_fixtures_from_firebase()
@@ -99,11 +129,11 @@ public class Prediction_Scene : MonoBehaviour
             print(fixture);
             // If in future and within next week TODO: next week will need to be looked at
             DateTime fix_date;
-            fix_date = new DateTime(Int32.Parse(fixture.Substring(25, 4)),  // year
-                                    Int32.Parse(fixture.Substring(23, 2)),  // month
-                                    Int32.Parse(fixture.Substring(21, 2)),  // day
-                                    Int32.Parse(fixture.Substring(12, 2)),  // hour
-                                    Int32.Parse(fixture.Substring(14, 2)),  // minute
+            fix_date = new DateTime(Int32.Parse(fixture.Substring(30, 4)),  // year
+                                    Int32.Parse(fixture.Substring(28, 2)),  // month
+                                    Int32.Parse(fixture.Substring(26, 2)),  // day
+                                    Int32.Parse(fixture.Substring(17, 2)),  // hour
+                                    Int32.Parse(fixture.Substring(19, 2)),  // minute
                                     0);                                    // second
             // Check that fixture is within 5 days
             if (DateTime.Compare(DateTime.Now.AddDays(25), fix_date) > 0)
@@ -113,8 +143,9 @@ public class Prediction_Scene : MonoBehaviour
                 {
                     fixture_class temp_fix = new fixture_class();
                     temp_fix.fixture_date = fix_date;
-                    temp_fix.home_team = fixture.Substring(0, 3);
-                    temp_fix.away_team = fixture.Substring(4, 3);
+                    temp_fix.home_team = fixture.Substring(5, 3);
+                    temp_fix.away_team = fixture.Substring(9, 3);
+                    temp_fix.match_id = fixture.Substring(0, 4);
                     C_Fixtures.Add(temp_fix);
                 }
 
@@ -124,25 +155,29 @@ public class Prediction_Scene : MonoBehaviour
         // Sort fixtures by date
         C_Fixtures.Sort((x, y) => DateTime.Compare(x.fixture_date, y.fixture_date));
 
-        Debug.LogError(" Going to make UI");
+        //Debug.Log(" Going to make UI");
         // Create fixture UI
         foreach (fixture_class fix in C_Fixtures)
         {
             create_fixture_UI(fix.fixture_date,
                               fix.home_team,
-                              fix.away_team);
+                              fix.away_team,
+                              fix.match_id);
         }
 
     }
 
-    private void create_fixture_UI(DateTime ko_date, String home_team, String away_team)
+    private void create_fixture_UI(DateTime ko_date, String home_team, String away_team, String match_id)
     {
-        Debug.Log("Creating UI element");
+        //Debug.Log("Creating UI element");
         // Make instance of prediction
         GameObject prediction_instance = Instantiate(_prediction_score_template);
 
         // Create prediction as child of scroll view content object
         prediction_instance.transform.SetParent(_prediction_content.transform, false);
+
+        // Add match id
+        prediction_instance.GetComponent<Prediction_button>().match_id = int.Parse(match_id);
 
         // Set team names
         prediction_instance.GetComponent<Prediction_button>().update_home_team_text(home_team);
@@ -164,4 +199,150 @@ public class Prediction_Scene : MonoBehaviour
 
     }
 
+    public void submit_predictions()
+    {
+        // Submit the users predictions to the database
+        Debug.Log("Submitting predictions");
+
+        GameObject[] Predictions = GameObject.FindGameObjectsWithTag("PredictionElement");
+        foreach(GameObject pred in Predictions)
+        {
+            submit_prediciton(pred.GetComponent<Prediction_button>().match_id.ToString(),
+                              pred.GetComponent<Prediction_button>().user_prediction_home_score,
+                              pred.GetComponent<Prediction_button>().user_prediction_away_score);
+        }
+    }
+
+    private void submit_prediciton(string match_id, float home_pred, float away_pred)
+    {
+        Debug.Log("Submitting prediction for match id:" + match_id);
+
+        string match_id_str = "match_ID: " + match_id;
+        string match_id_json = JsonUtility.ToJson(match_id);
+        string home_pred_str = JsonUtility.ToJson(home_pred);
+        string away_pred_str = JsonUtility.ToJson(away_pred);
+
+        _prediction_database = FirebaseDatabase.DefaultInstance.RootReference;
+
+        string display_name;
+
+#if (UNITY_EDITOR)
+
+        Debug.Log("in unity editor");
+        Debug.Log("info: " + match_id + " " + home_pred + " " + away_pred);
+        Debug.Log("mDatabaseRef: " + _prediction_database);
+
+        display_name = "DESKTOP 2";
+
+#else
+        Debug.Log("in mobile");
+        var user = auth.CurrentUser;
+        display_name = auth.CurrentUser.DisplayName;
+#endif
+
+        //_prediction_database.Child("predictions").Child("match_id_1").Child("example_user").Child("home_prediction").SetRawJsonValueAsync(JsonUtility.ToJson(55));
+        //_prediction_database.Child("predictions").Child("match_id_1").Child("DESKTOP").Child("away_prediction").SetRawJsonValueAsync(JsonUtility.ToJson(55));
+
+        //_prediction_database.Child("predictions").Child(match_id_str).Child("DESKTOP").Child("match_id").SetRawJsonValueAsync(match_id);
+        //_prediction_database.Child("predictions").Child(match_id_str).Child("DESKTOP").Child("home_prediction").SetRawJsonValueAsync(home_pred_str);
+        //_prediction_database.Child("predictions").Child(match_id_str).Child("DESKTOP").Child("away_prediction").SetRawJsonValueAsync(away_pred_str);
+
+        //_prediction_database.Child("predictions").Child(match_id_str).Child("DESKTOP").Child("match_id").SetRawJsonValueAsync(match_id);
+        //_prediction_database.Child("predictions").Child(match_id_str).Child("DESKTOP").Child("home_prediction").SetValueAsync(home_pred);
+        //_prediction_database.Child("predictions").Child(match_id_str).Child("DESKTOP").Child("away_prediction").SetValueAsync(away_pred);
+        //#else
+
+        // On mobile should have user information
+        //_prediction_database.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.DisplayName).SetRawJsonValueAsync(match_id);
+        //_prediction_database.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.DisplayName).SetRawJsonValueAsync(home_pred_str);
+        //_prediction_database.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.DisplayName).SetRawJsonValueAsync(away_pred_str);
+
+
+        _prediction_database.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
+        _prediction_database.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
+        _prediction_database.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
+
+//#endif
+    }
+
+    // A realtime database transaction receives MutableData which can be modified
+    // and returns a TransactionResult which is either TransactionResult.Success(data) with
+    // modified data or TransactionResult.Abort() which stops the transaction with no changes.
+    //TransactionResult AddScoreTransaction(MutableData mutableData)
+    //{
+    //    List<object> leaders = mutableData.Value as List<object>;
+
+    //    if (leaders == null)
+    //    {
+    //        leaders = new List<object>();
+    //    }
+    //    else if (mutableData.ChildrenCount >= MaxScores)
+    //    {
+    //        // If the current list of scores is greater or equal to our maximum allowed number,
+    //        // we see if the new score should be added and remove the lowest existing score.
+    //        long minScore = long.MaxValue;
+    //        object minVal = null;
+    //        foreach (var child in leaders)
+    //        {
+    //            if (!(child is Dictionary<string, object>))
+    //                continue;
+    //            long childScore = (long)((Dictionary<string, object>)child)["score"];
+    //            if (childScore < minScore)
+    //            {
+    //                minScore = childScore;
+    //                minVal = child;
+    //            }
+    //        }
+    //        // If the new score is lower than the current minimum, we abort.
+    //        if (minScore > score)
+    //        {
+    //            return TransactionResult.Abort();
+    //        }
+    //        // Otherwise, we remove the current lowest to be replaced with the new score.
+    //        leaders.Remove(minVal);
+    //    }
+
+    //    // Now we add the new score as a new entry that contains the email address and score.
+    //    Dictionary<string, object> newScoreMap = new Dictionary<string, object>();
+    //    newScoreMap["score"] = score;
+    //    newScoreMap["email"] = name;
+    //    leaders.Add(newScoreMap);
+
+    //    // You must set the Value to indicate data at that location has changed.
+    //    mutableData.Value = leaders;
+    //    //return and log success
+    //    return TransactionResult.Success(mutableData);
+    //}
+
+    //public void AddScore()
+    //{
+    //    name = nameText.text;
+    //    score = Int32.Parse(scoreText.text);
+
+    //    if (score == 0 || string.IsNullOrEmpty(name))
+    //    {
+    //        DebugLog("invalid score or email.");
+    //        return;
+    //    }
+    //    Debug.Log(String.Format("Attempting to add score {0} {1}", name, score.ToString()));
+
+    //    DatabaseReference reference = FirebaseDatabase.DefaultInstance.GetReference("Leaders");
+
+    //    DebugLog("Running Transaction...");
+    //    // Use a transaction to ensure that we do not encounter issues with
+    //    // simultaneous updates that otherwise might create more than MaxScores top scores.
+    //    reference.RunTransaction(AddScoreTransaction)
+    //      .ContinueWith(task => {
+    //          if (task.Exception != null)
+    //          {
+    //              DebugLog(task.Exception.ToString());
+    //          }
+    //          else if (task.IsCompleted)
+    //          {
+    //              DebugLog("Transaction complete.");
+    //          }
+    //      });
+    //    //update UI
+    //    addScorePressed = true;
+    //}
 }

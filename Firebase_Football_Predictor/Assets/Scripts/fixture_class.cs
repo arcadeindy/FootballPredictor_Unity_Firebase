@@ -26,6 +26,12 @@ namespace football_predictor
             set;
         }
 
+        public String match_id
+        {
+            get;
+            set;
+        }
+
 
     }
 

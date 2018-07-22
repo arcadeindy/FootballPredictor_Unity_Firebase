@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 114119867311158856}
   m_Layer: 5
   m_Name: Button_ScorePlaceholder
-  m_TagString: Untagged
+  m_TagString: PredictionElement
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
