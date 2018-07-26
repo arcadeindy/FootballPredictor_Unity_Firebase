@@ -24,8 +24,14 @@ public class scene_manager : MonoBehaviour {
         // add an advertisement?
     }
 
+    public void load_prediction_submitted_scene()
+    {
+        SceneManager.LoadScene("prediction_submitted_scene");
+    }
+
     public void load_user_scene()
     {
+        // home scene?
         SceneManager.LoadScene("user_scene");
         // add an advertisement?
     }

@@ -51,6 +51,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7b4fe03eebc922479f2a7e8763a384f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scene_transition_manager: {fileID: 1582906305001470, guid: 11f2615c89f477e4597e71352a929cad,
+    type: 2}
   _prediction_content: {fileID: 0}
   _prediction_score_template: {fileID: 1369517322571622, guid: 25619785d8149984f99aad4fa1ec53fe,
     type: 2}
@@ -58,4 +60,3 @@ MonoBehaviour:
     type: 2}
   _footer_button: {fileID: 1683535969023958, guid: 7a1766b43ad83d24fb653bdf31fcaaaf,
     type: 2}
-  info_text: {fileID: 0}

@@ -14,9 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/sign_up_scene.unity
     guid: b4761441ace71a04a8424854731a4656
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/user_scene.unity
     guid: 8bd2a4620831e8346900d236c3cd2efa
   - enabled: 1
     path: Assets/Scenes/prediction_scene.unity
     guid: 0cd3f398b952be648819905e691e28e4
+  - enabled: 1
+    path: Assets/Scenes/prediction_submitted_scene.unity
+    guid: 7521eb9da7be4ec4ba64a05920b741fe
