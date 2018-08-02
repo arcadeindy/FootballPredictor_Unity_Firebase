@@ -4,180 +4,192 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Firebase;
+using Firebase.Database;
+using Firebase.Unity.Editor;
 
-public class SignUpScript : MonoBehaviour {
-
-    public GameObject scene_transition_manager;
-
-    protected Firebase.Auth.FirebaseAuth auth;
-
-    public InputField email_input;
-    public InputField password_input;
-    public InputField display_name_input;
-    protected string email = "";
-    protected string password = "";
-    protected string displayName = "";
-
-    // Buttons will be done in the inspector
-
-    // Use this for initialization
-    void Start ()
+namespace football_predictor
+{
+    public class SignUpScript : MonoBehaviour
     {
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-    }
 
-    public void Initialize()
-    {
-        
-    }
+        public GameObject scene_transition_manager;
 
-    public void SignUpButtonPressed()
-    {
-        email = "demofirebase2" + Time.time + "@gmail.com";// email_input.text;
-        password = "abcdefgh";  //password_input.text;
-        displayName = "Mr Happy"; // display_name_input.text;
+        public GameObject menu_bar_for_editor;
 
-        CreateUserWithEmailAsync();
+        protected Firebase.Auth.FirebaseAuth auth;
+
+        private Firebase.FirebaseApp app;
+        private Firebase.Database.FirebaseDatabase _user_database;
 
 
-    }
+        public InputField email_input;
+        public InputField password_input;
+        public InputField display_name_input;
+        protected string email = "";
+        protected string password = "";
+        protected string displayName = "";
 
-    public void IsSignUpComplete()
-    {
-        // If sucessful go to welcome page
-        var user = auth.CurrentUser;
-        if (user != null)
+        public Text error_text;
+
+        // Buttons will be done in the inspector
+
+        // Use this for initialization
+        void Start()
         {
-            print("user is signed in");
-            scene_transition_manager.GetComponent<scene_manager>().load_welcome_scene();
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+#if (UNITY_EDITOR)
+            menu_bar_for_editor.SetActive(true);
+#endif
         }
-        else
+
+        public void SignUpButtonPressed()
         {
-            print("user is not signed in");
-            // Return why?
+            //email = "demofirebase2" + Time.time + "@gmail.com";
+            //password = "abcdefgh";
+            //displayName = "Mr Happy";
+
+            email = email_input.text;
+            password = password_input.text;
+            displayName = display_name_input.text;
+
+            error_text.enabled = false;
+
+            CreateUserWithEmailAsync();
+
         }
-    }
 
-
-    // Create a user with the email and password.
-    public Task CreateUserWithEmailAsync()
-    {
-        Debug.Log(String.Format("Attempting to create user {0}...", email));
-        //DisableUI();
-
-        // This passes the current displayName through to HandleCreateUserAsync
-        // so that it can be passed to UpdateUserProfile().  displayName will be
-        // reset by AuthStateChanged() when the new user is created and signed in.
-        string newDisplayName = displayName;
-        return auth.CreateUserWithEmailAndPasswordAsync(email, password)
-          .ContinueWith((task) => {
-              //EnableUI();
-              if (LogTaskCompletion(task, "User Creation"))
-              {
-                  var user = task.Result;
-                  DisplayDetailedUserInfo(user, 1);
-                  return UpdateUserProfileAsync(newDisplayName: newDisplayName);
-              }
-              return task;
-          }).Unwrap();
-    }
-
-    // Update the user's display name with the currently selected display name.
-    public Task UpdateUserProfileAsync(string newDisplayName = null)
-    {
-        if (auth.CurrentUser == null)
+        public void IsSignUpComplete()
         {
-            Debug.Log("Not signed in, unable to update user profile");
-            return Task.FromResult(0);
-        }
-        displayName = newDisplayName ?? displayName;
-        Debug.Log("Updating user profile");
-        //DisableUI();
-        return auth.CurrentUser.UpdateUserProfileAsync(new Firebase.Auth.UserProfile
-        {
-            DisplayName = displayName,
-            PhotoUrl = auth.CurrentUser.PhotoUrl,
-        }).ContinueWith(task => {
-            //EnableUI();
-            if (LogTaskCompletion(task, "User profile"))
+            // If sucessful go to welcome page
+            var user = auth.CurrentUser;
+            if (user != null)
             {
-                DisplayDetailedUserInfo(auth.CurrentUser, 1);
-                IsSignUpComplete();
+                Debug.Log("user is signed in");
+                scene_transition_manager.GetComponent<scene_manager>().load_welcome_scene();
             }
-        });
-    }
-
-    // Log the result of the specified task, returning true if the task
-    // completed successfully, false otherwise.
-    protected bool LogTaskCompletion(Task task, string operation)
-    {
-        bool complete = false;
-        if (task.IsCanceled)
-        {
-            Debug.Log(operation + " canceled.");
-        }
-        else if (task.IsFaulted)
-        {
-            Debug.Log(operation + " encounted an error.");
-            foreach (Exception exception in task.Exception.Flatten().InnerExceptions)
+            else
             {
-                string authErrorCode = "";
-                Firebase.FirebaseException firebaseEx = exception as Firebase.FirebaseException;
-                if (firebaseEx != null)
+                print("user is not signed in");
+            }
+        }
+
+        private void add_user_to_database(string user_name, string email_address)
+        {
+
+            Debug.Log("adding user to database");
+            app = CommonData.app;
+            _user_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+
+            var user = auth.CurrentUser;
+            var uid = user.UserId;
+
+            _user_database.RootReference.Child("users").Child(uid).Child("user_name").SetRawJsonValueAsync(user_name);
+            _user_database.RootReference.Child("users").Child(uid).Child("email").SetRawJsonValueAsync(email_address);
+        }
+
+        private bool check_if_user_name_in_use(string user_name)
+        {
+            bool is_user_name_taken = false;
+
+            // Check realtime database for user name
+            app = CommonData.app;
+            Firebase.Database.FirebaseDatabase user_db = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            user_db.RootReference.Child("users").Child(user_name).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
                 {
-                    authErrorCode = String.Format("AuthError.{0}: ",
-                      ((Firebase.Auth.AuthError)firebaseEx.ErrorCode).ToString());
+                    // Handle the error...
                 }
-                Debug.Log(authErrorCode + exception.ToString());
-            }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    foreach (DataSnapshot user in snapshot.Children)
+                    {
+                        if ((string)user.Value == user_name)
+                        {
+                            is_user_name_taken = true;
+                            return;
+                        }
+                    }
+                    return;
+                }
+            });
+            return is_user_name_taken;
         }
-        else if (task.IsCompleted)
-        {
-            Debug.Log(operation + " completed");
-            complete = true;
-        }
-        return complete;
-    }
 
-    // Display user information.
-    protected void DisplayUserInfo(Firebase.Auth.IUserInfo userInfo, int indentLevel)
-    {
-        string indent = new String(' ', indentLevel * 2);
-        var userProperties = new Dictionary<string, string> {
-      {"Display Name", userInfo.DisplayName},
-      {"Email", userInfo.Email},
-      {"Photo URL", userInfo.PhotoUrl != null ? userInfo.PhotoUrl.ToString() : null},
-      {"Provider ID", userInfo.ProviderId},
-      {"User ID", userInfo.UserId}
-    };
-        foreach (var property in userProperties)
+        // Create a user with the email and password.
+        public Task CreateUserWithEmailAsync()
         {
-            if (!String.IsNullOrEmpty(property.Value))
+            Debug.Log(String.Format("Attempting to create user {0}...", email));
+
+            // Check if email and username already in use
+            if (check_if_user_name_in_use(displayName))
             {
-                Debug.Log(String.Format("{0}{1}: {2}", indent, property.Key, property.Value));
+                Debug.Log("user name already taken!");
+                // Print Error
+                error_text.text = "User name already taken";
+                error_text.enabled = true;
             }
-        }
-    }
 
-    // Display a more detailed view of a FirebaseUser.
-    protected void DisplayDetailedUserInfo(Firebase.Auth.FirebaseUser user, int indentLevel)
-    {
-        string indent = new String(' ', indentLevel * 2);
-        DisplayUserInfo(user, indentLevel);
-        Debug.Log(String.Format("{0}Anonymous: {1}", indent, user.IsAnonymous));
-        Debug.Log(String.Format("{0}Email Verified: {1}", indent, user.IsEmailVerified));
-        Debug.Log(String.Format("{0}Phone Number: {1}", indent, user.PhoneNumber));
-        var providerDataList = new List<Firebase.Auth.IUserInfo>(user.ProviderData);
-        var numberOfProviders = providerDataList.Count;
-        if (numberOfProviders > 0)
+            // This passes the current displayName through to HandleCreateUserAsync
+            // so that it can be passed to UpdateUserProfile().  displayName will be
+            // reset by AuthStateChanged() when the new user is created and signed in.
+            string newDisplayName = displayName;
+            return auth.CreateUserWithEmailAndPasswordAsync(email, password)
+              .ContinueWith((task) =>
+              {
+                  if (task.IsCanceled)
+                  {
+                      Debug.LogError("User creation task was canceled.");
+                      return;
+                  }
+                  if (task.IsFaulted)
+                  {
+                      Debug.LogError("User creation task encountered an error: " + task.Exception);
+                      error_text.text = "ERROR: " + task.Exception;
+                      error_text.enabled = true;
+                      return;
+                  }
+                  Debug.Log("User reauthenticated successfully.");
+                  add_user_to_database(email, password);
+                  UpdateUserProfileAsync(newDisplayName: newDisplayName);
+              });
+        }
+
+        // Update the user's display name with the currently selected display name.
+        public Task UpdateUserProfileAsync(string newDisplayName = null)
         {
-            for (int i = 0; i < numberOfProviders; ++i)
+            if (auth.CurrentUser == null)
             {
-                Debug.Log(String.Format("{0}Provider Data: {1}", indent, i));
-                DisplayUserInfo(providerDataList[i], indentLevel + 2);
+                Debug.Log("Not signed in, unable to update user profile");
+                return Task.FromResult(0);
             }
+            displayName = newDisplayName ?? displayName;
+            Debug.Log("Updating user profile");
+            return auth.CurrentUser.UpdateUserProfileAsync
+                (
+                new Firebase.Auth.UserProfile
+                {
+                    DisplayName = displayName,
+                    PhotoUrl = auth.CurrentUser.PhotoUrl,
+                }).ContinueWith(task => {
+                    if (task.IsCanceled)
+                    {
+                        Debug.LogError("UpdateUserProfileAsync task was canceled.");
+                        return;
+                    }
+                    if (task.IsFaulted)
+                    {
+                        Debug.LogError("UpdateUserProfileAsync task encountered an error: " + task.Exception);
+                        return;
+                    }
+                    Debug.Log("UpdateUserProfileAsync successful.");
+                    IsSignUpComplete();
+                }
+                );
         }
+
     }
-
-
 }
+

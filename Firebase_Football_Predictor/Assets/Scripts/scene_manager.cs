@@ -36,9 +36,26 @@ public class scene_manager : MonoBehaviour {
         // add an advertisement?
     }
 
+    public void delete_user_scene()
+    {
+        // home scene?
+        SceneManager.LoadScene("delete_user_scene");
+    }
+
     public void load_welcome_scene()
     {
         SceneManager.LoadScene("welcome_user_scene");
+    }
+
+    public void load_no_user_scene()
+    {
+        // Loads a scene with links to user log in or sign up
+        SceneManager.LoadScene("no_user_scene");
+    }
+
+    public void load_login_scene()
+    {
+        SceneManager.LoadScene("log_in_scene");
     }
 
     public void load_signup_scene()

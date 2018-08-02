@@ -258,9 +258,13 @@ namespace football_predictor
             display_name = auth.CurrentUser.DisplayName;
 #endif
 
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
+            // _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
+            // _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
+            //  _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("user_name").SetRawJsonValueAsync(display_name);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("match_id").SetRawJsonValueAsync(match_id);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("home_prediction").SetValueAsync(home_pred);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("away_prediction").SetValueAsync(away_pred);
 
         }
 

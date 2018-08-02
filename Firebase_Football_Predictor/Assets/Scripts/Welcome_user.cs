@@ -34,7 +34,7 @@ public class Welcome_user : MonoBehaviour
         else
         {
             print("user is not signed in");
-            scene_transition_manager.GetComponent<scene_manager>().load_signup_scene();
+            scene_transition_manager.GetComponent<scene_manager>().load_no_user_scene();
         }
 
     }

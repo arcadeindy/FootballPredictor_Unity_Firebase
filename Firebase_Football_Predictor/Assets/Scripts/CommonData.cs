@@ -9,7 +9,7 @@ namespace football_predictor
         public static Firebase.FirebaseApp app;
 
 
-
     }
+
 }
 

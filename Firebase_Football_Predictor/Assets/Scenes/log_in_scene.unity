@@ -430,7 +430,7 @@ GameObject:
   - component: {fileID: 190859989}
   - component: {fileID: 190859988}
   m_Layer: 5
-  m_Name: SubmitButton
+  m_Name: LoginButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -495,7 +495,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 714094988}
-        m_MethodName: SignUpButtonPressed
+        m_MethodName: LogInButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1086,7 +1086,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Create New Account
+  m_Text: Log In
 --- !u!222 &616282357
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1265,15 +1265,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 714094987}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2458ac2453f6e204e99e8aad74d3dd95, type: 3}
+  m_Script: {fileID: 11500000, guid: 04da76ea50b909a42829deccbfb09c71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   scene_transition_manager: {fileID: 178010058}
-  menu_bar_for_editor: {fileID: 1250194648}
   email_input: {fileID: 722848927}
   password_input: {fileID: 1180206708}
-  display_name_input: {fileID: 1057323082}
-  error_text: {fileID: 1660637734}
+  error_text: {fileID: 1473060780}
 --- !u!4 &714094989
 Transform:
   m_ObjectHideFlags: 0
@@ -1916,7 +1914,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1057323081
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2622,59 +2620,54 @@ RectTransform:
   m_PrefabParentObject: {fileID: 224553564968075268, guid: 900126ca6a105d741b6f8f8a1dfec184,
     type: 2}
   m_PrefabInternal: {fileID: 1250194646}
---- !u!1 &1250194648 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1736262571118984, guid: 900126ca6a105d741b6f8f8a1dfec184,
-    type: 2}
-  m_PrefabInternal: {fileID: 1250194646}
---- !u!1 &1660637732
+--- !u!1 &1473060778
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 1660637733}
-  - component: {fileID: 1660637735}
-  - component: {fileID: 1660637734}
+  - component: {fileID: 1473060779}
+  - component: {fileID: 1473060781}
+  - component: {fileID: 1473060780}
   m_Layer: 5
-  m_Name: ErrorText
+  m_Name: Error Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1660637733
+--- !u!224 &1473060779
 RectTransform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1660637732}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_GameObject: {fileID: 1473060778}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
   m_Children: []
   m_Father: {fileID: 1870745392}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 200}
-  m_SizeDelta: {x: 500, y: 250}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -1202}
+  m_SizeDelta: {x: 700, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1660637734
+--- !u!114 &1473060780
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1660637732}
+  m_GameObject: {fileID: 1473060778}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7058823, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2687,20 +2680,20 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 80
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
---- !u!222 &1660637735
+  m_Text: Error Text
+--- !u!222 &1473060781
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1660637732}
+  m_GameObject: {fileID: 1473060778}
 --- !u!1 &1702999372
 GameObject:
   m_ObjectHideFlags: 0
@@ -2842,7 +2835,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Submit
+  m_Text: Log In
 --- !u!222 &1720370578
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3163,7 +3156,7 @@ RectTransform:
   - {fileID: 1180206707}
   - {fileID: 190859987}
   - {fileID: 1046554238}
-  - {fileID: 1660637733}
+  - {fileID: 1473060779}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

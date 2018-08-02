@@ -12,6 +12,8 @@ public class home_script : MonoBehaviour {
 
     public Text Text_field;
 
+    public Text Delete_text_field;
+
     public void Start()
     {
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
@@ -31,9 +33,29 @@ public class home_script : MonoBehaviour {
         else
         {
             print("user is not signed in");
-            scene_transition_manager.GetComponent<scene_manager>().load_signup_scene();
+            scene_transition_manager.GetComponent<scene_manager>().load_no_user_scene();
         }
-
     }
 
+    // Sign out the current user
+    public void sign_out()
+    {
+        Debug.Log("Signing out.");
+        auth.SignOut();
+        scene_transition_manager.GetComponent<scene_manager>().load_no_user_scene();
+    }
+
+
+    // Delete the currently logged in user.
+    public void delete_user()
+    {
+        if (auth.CurrentUser != null)
+        {
+            auth.CurrentUser.DeleteAsync();
+        }
+        else
+        {
+            Debug.Log("Sign-in before deleting user.");
+        }
+    }
 }

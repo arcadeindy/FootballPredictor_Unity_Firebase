@@ -153,7 +153,7 @@ namespace football_predictor
             else
             {
                 Debug.Log("user is not signed in");
-                scene_transition_manager.GetComponent<scene_manager>().load_signup_scene();
+                scene_transition_manager.GetComponent<scene_manager>().load_no_user_scene();
             }
 
         }
