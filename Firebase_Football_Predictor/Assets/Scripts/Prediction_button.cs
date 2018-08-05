@@ -54,6 +54,7 @@ public class Prediction_button : MonoBehaviour {
 
     public void update_home_team_text(String home_team)
     {
+
         home_team = lookup_full_team_name(home_team);
         home_team_text.text = home_team;
     }
@@ -82,6 +83,7 @@ public class Prediction_button : MonoBehaviour {
 
     public void increase_home_score()
     {
+        user_prediction_home_score_text.textComponent.color = Color.black;
         print("increasing_home_score" + user_prediction_home_score);
         user_prediction_home_score++;
         user_prediction_home_score_text.text = " " + user_prediction_home_score.ToString();
@@ -91,6 +93,7 @@ public class Prediction_button : MonoBehaviour {
     {
         if (user_prediction_home_score > 0)
         {
+            user_prediction_home_score_text.textComponent.color = Color.black;
             user_prediction_home_score--;
             user_prediction_home_score_text.text = user_prediction_home_score.ToString();
         }
@@ -98,6 +101,7 @@ public class Prediction_button : MonoBehaviour {
 
     public void increase_away_score()
     {
+        user_prediction_away_score_text.textComponent.color = Color.black;
         user_prediction_away_score++;
         user_prediction_away_score_text.text = user_prediction_away_score.ToString();
     }
@@ -106,6 +110,7 @@ public class Prediction_button : MonoBehaviour {
     {
         if(user_prediction_away_score > 0)
         {
+            user_prediction_away_score_text.textComponent.color = Color.black;
             user_prediction_away_score--;
             user_prediction_away_score_text.text = user_prediction_away_score.ToString();
         }

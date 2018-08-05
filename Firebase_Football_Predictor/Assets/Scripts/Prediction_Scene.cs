@@ -7,6 +7,7 @@ using System;
 using Firebase;
 using Firebase.Unity.Editor;
 using UnityEngine.UI;
+using Firebase.Database;
 
 namespace football_predictor
 {
@@ -146,7 +147,7 @@ namespace football_predictor
                                         Int32.Parse(fixture.Substring(19, 2)),  // minute
                                         0);                                    // second
                                                                                // Check that fixture is within 5 days
-                if (DateTime.Compare(DateTime.Now.AddDays(20), fix_date) > 0)
+                if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
                 {
                     // Check fixture is not in the past
                     if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
@@ -179,6 +180,10 @@ namespace football_predictor
 
         private void create_fixture_UI(DateTime ko_date, String home_team, String away_team, String match_id)
         {
+            // Create a fixture UI element. With home & away teams with a match ID
+            // This element is outlined in "Prediction_button.cs" 
+            // (which is not related to the add_prediciton_button() void in this class
+
             //Debug.Log("Creating UI element");
             // Make instance of prediction
             GameObject prediction_instance = Instantiate(_prediction_score_template);
@@ -188,17 +193,107 @@ namespace football_predictor
 
             // Add match id
             prediction_instance.GetComponent<Prediction_button>().match_id = int.Parse(match_id);
-
             // Set team names
             prediction_instance.GetComponent<Prediction_button>().update_home_team_text(home_team);
             prediction_instance.GetComponent<Prediction_button>().update_away_team_text(away_team);
             //Set ko time and date
             prediction_instance.GetComponent<Prediction_button>().update_ko_time_text(ko_date);
 
+            // Read from the database if user has set these scores before
+            // (make them blue)
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            // Get user from authentication
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+            Debug.Log("match id is: " + match_id);
+            string match_id_str;
+            if (int.Parse(match_id) < 10) // SHOULD THIS BE FIXED ON DATABASE INPUT?
+            {
+                match_id_str = "match_ID" + int.Parse(match_id).ToString("0");
+            }
+            else if (int.Parse(match_id) < 100)
+            {
+                match_id_str = "match_ID" + int.Parse(match_id).ToString("00");
+            }
+            else //(int.Parse(match_id) < 1000) // should be increased for 10000
+            {
+                match_id_str = "match_ID" + int.Parse(match_id).ToString("000");
+            }
+
+
+            string display_name;
+            string db_path;
+
+#if (UNITY_EDITOR)
+            display_name = "DESKTOP4";
+
+#else
+            display_name = auth.CurrentUser.UserId;
+#endif
+           db_path = "predictions" + "/" +
+                match_id_str + "/" +
+                display_name + "/" +
+                "home_prediction";
+
+            //db_path = "predictions/match_ID1/DESKTOP4/home_prediction"; // for testing
+            Debug.Log("my path: " + db_path);
+            string json_test;
+            json_test = JsonUtility.ToJson(db_path);
+            Debug.Log("my json: " + db_path);
+
+            _prediction_database.GetReference(db_path).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    // task faulted
+                    Debug.Log("task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    Debug.Log("snapshot ref: " + snapshot.Reference);
+                    Debug.Log("snapshot value: " + snapshot.Value);
+                    prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score_text.textComponent.color = Color.blue;
+                    prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score_text.text = snapshot.Value.ToString();
+
+                }
+            });
+
+            // Repeat for away scores TODO: tidy this up
+            db_path = "predictions" + "/" +
+                 match_id_str + "/" +
+                 display_name + "/" +
+                 "away_prediction";
+
+            //db_path = "predictions/match_ID:1/DESKTOP4/home_prediction"; // for testing
+            _prediction_database.GetReference(db_path).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    // task faulted
+                    Debug.Log("task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    Debug.Log("snapshot ref: " + snapshot.Reference);
+                    Debug.Log("snapshot value: " + snapshot.Value);
+                    prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score_text.textComponent.color = Color.blue;
+                    prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score_text.text = snapshot.Value.ToString();
+
+                }
+            });
+
+
         }
+
+
 
         private void add_prediciton_button()
         {
+            // Creates the button to press to submit all user predictions
+            // Should be at bottom of the prediction scene
+
             GameObject prediction_button_instance;
             prediction_button_instance = Instantiate(_submit_prediction_button);
             prediction_button_instance.transform.SetParent(_prediction_content.transform, false);
@@ -229,7 +324,7 @@ namespace football_predictor
         {
             Debug.Log("Submitting prediction for match id:" + match_id);
 
-            string match_id_str = "match_ID: " + match_id;
+            string match_id_str = "match_ID" + match_id;
             string match_id_json = JsonUtility.ToJson(match_id);
             string home_pred_str = JsonUtility.ToJson(home_pred);
             string away_pred_str = JsonUtility.ToJson(away_pred);
@@ -250,21 +345,22 @@ namespace football_predictor
             Debug.Log("info: " + match_id + " " + home_pred + " " + away_pred);
             Debug.Log("mDatabaseRef: " + _prediction_database);
 
-            display_name = "DESKTOP 4";
+            display_name = "DESKTOP4";
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("user_name").SetRawJsonValueAsync(display_name);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
 
 #else
             Debug.Log("in mobile");
             var user = auth.CurrentUser;
             display_name = auth.CurrentUser.DisplayName;
-#endif
-
-            // _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
-            // _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
-            //  _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("user_name").SetRawJsonValueAsync(display_name);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("match_id").SetRawJsonValueAsync(match_id);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("home_prediction").SetValueAsync(home_pred);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("away_prediction").SetValueAsync(away_pred);
+#endif
+
 
         }
 
