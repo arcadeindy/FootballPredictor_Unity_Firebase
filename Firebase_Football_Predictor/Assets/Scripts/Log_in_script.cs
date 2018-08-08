@@ -19,7 +19,7 @@ public class Log_in_script : MonoBehaviour {
     //protected string displayName = "";
 
     // Whether to sign in / link or reauthentication *and* fetch user profile data.
-    protected bool signInAndFetchProfile = true;
+    protected bool signInAndFetchProfile = false;
 
     public Text error_text;
 
@@ -48,12 +48,17 @@ public class Log_in_script : MonoBehaviour {
         var user = auth.CurrentUser;
         if (user != null)
         {
-            print("user is signed in");
+            Debug.Log("user is signed in");
+            error_text.color = Color.green;
+            error_text.text = "Log in sucessful!";
+            error_text.enabled = true;
             scene_transition_manager.GetComponent<scene_manager>().load_welcome_scene();
         }
         else
         {
-            print("user is not signed in");
+            Debug.Log("user is not signed in");
+            error_text.text = "Log in unsucessful!";
+            error_text.enabled = true;
         }
     }
 
@@ -87,7 +92,6 @@ public class Log_in_script : MonoBehaviour {
     // completed successfully, false otherwise.
     protected bool LogTaskCompletion(Task task, string operation)
     {
-        bool complete = false;
         if (task.IsCanceled)
         {
             Debug.Log(operation + " canceled.");
@@ -112,9 +116,8 @@ public class Log_in_script : MonoBehaviour {
         else if (task.IsCompleted)
         {
             Debug.Log(operation + " completed");
-            complete = true;
         }
-        return complete;
+        return task.IsCompleted;// complete;
     }
 
     // Display user information reported
@@ -143,10 +146,10 @@ public class Log_in_script : MonoBehaviour {
     void HandleSignInWithUser(Task<Firebase.Auth.FirebaseUser> task)
     {
         IsSignInComplete();
-        if (LogTaskCompletion(task, "Sign-in"))
-        {
-            Debug.Log(String.Format("{0} signed in", task.Result.DisplayName));
-        }
+        //if (LogTaskCompletion(task, "Sign-in"))
+        //{
+        //    Debug.Log(String.Format("{0} signed in", task.Result.DisplayName));
+        //}
     }
 
     // Display a more detailed view of a FirebaseUser.

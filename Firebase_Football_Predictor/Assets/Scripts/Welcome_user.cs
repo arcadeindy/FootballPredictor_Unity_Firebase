@@ -14,6 +14,8 @@ public class Welcome_user : MonoBehaviour
 
     public Text Welcome_Text;
 
+    public Text user_points;
+
     public void Start()
     {
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;

@@ -71,12 +71,12 @@ public class Prediction_button : MonoBehaviour {
         ko_time_text.text = ko_date.ToString("HH:mm");
     }
 
-    public void update_predicted_home_score(int home_score)
+    public void update_predicted_home_score()
     {
         user_prediction_home_score_text.text = user_prediction_home_score.ToString();
     }
 
-    public void update_predicted_away_score(int away_score)
+    public void update_predicted_away_score()
     {
         user_prediction_away_score_text.text = user_prediction_away_score.ToString();
     }

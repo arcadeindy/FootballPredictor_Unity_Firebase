@@ -254,7 +254,8 @@ namespace football_predictor
                     Debug.Log("snapshot ref: " + snapshot.Reference);
                     Debug.Log("snapshot value: " + snapshot.Value);
                     prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score_text.textComponent.color = Color.blue;
-                    prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score_text.text = snapshot.Value.ToString();
+                    prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score = int.Parse(snapshot.Value.ToString());
+                    prediction_instance.GetComponent<Prediction_button>().update_predicted_home_score();
 
                 }
             });
@@ -279,8 +280,8 @@ namespace football_predictor
                     Debug.Log("snapshot ref: " + snapshot.Reference);
                     Debug.Log("snapshot value: " + snapshot.Value);
                     prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score_text.textComponent.color = Color.blue;
-                    prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score_text.text = snapshot.Value.ToString();
-
+                    prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score = int.Parse(snapshot.Value.ToString());
+                    prediction_instance.GetComponent<Prediction_button>().update_predicted_away_score();
                 }
             });
 

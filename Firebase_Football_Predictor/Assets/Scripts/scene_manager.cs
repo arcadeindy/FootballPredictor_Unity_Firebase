@@ -29,6 +29,11 @@ public class scene_manager : MonoBehaviour {
         SceneManager.LoadScene("prediction_submitted_scene");
     }
 
+    public void load_results_scene()
+    {
+        SceneManager.LoadScene("results_scene");
+    }
+
     public void load_user_scene()
     {
         // home scene?
@@ -67,6 +72,10 @@ public class scene_manager : MonoBehaviour {
     {
         // This scene should not be called as it will reset firebase
         SceneManager.LoadScene("startup_scene");
+    }
 
+    public void load_info_scene()
+    {
+        SceneManager.LoadScene("info_scene");
     }
 }
