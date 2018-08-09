@@ -78,113 +78,186 @@ namespace football_predictor
             Firebase.AppOptions ops = new Firebase.AppOptions();
 
             get_fixtures_from_firebase();
-            add_prediciton_button();
         }
 
         void get_fixtures_from_firebase()
         {
             Debug.Log("In: get_fixtures_from_firebase");
 
-            List<string> Fixtures = new List<string>();
+            //List<string> Fixtures = new List<string>();
             List<fixture_class> C_Fixtures = new List<fixture_class>();
 
-            // Check firebase for updates
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_1").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_2").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_3").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_4").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_5").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_6").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_7").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_8").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_9").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_10").StringValue);
+            //// Check firebase for updates
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_1").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_2").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_3").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_4").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_5").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_6").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_7").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_8").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_9").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_10").StringValue);
 
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_11").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_12").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_13").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_14").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_15").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_16").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_17").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_18").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_19").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_20").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_11").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_12").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_13").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_14").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_15").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_16").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_17").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_18").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_19").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_20").StringValue);
 
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_21").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_22").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_23").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_24").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_25").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_26").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_27").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_28").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_29").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_30").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_21").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_22").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_23").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_24").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_25").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_26").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_27").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_28").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_29").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_30").StringValue);
 
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_31").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_32").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_33").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_34").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_35").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_36").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_37").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_38").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_39").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_40").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_31").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_32").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_33").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_34").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_35").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_36").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_37").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_38").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_39").StringValue);
+            //Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_40").StringValue);
 
-
-            // Set up scene
-            foreach (string fixture in Fixtures)
+            // Get Fixtures from database
+            // Read from the database if user has set these scores before
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            _prediction_database.GetReference("premier_league_fixtures").GetValueAsync().ContinueWith(task =>
             {
-                print(fixture);
-                // If in future and within next week TODO: next week will need to be looked at
-                DateTime fix_date;
-                fix_date = new DateTime(Int32.Parse(fixture.Substring(30, 4)),  // year
-                                        Int32.Parse(fixture.Substring(28, 2)),  // month
-                                        Int32.Parse(fixture.Substring(26, 2)),  // day
-                                        Int32.Parse(fixture.Substring(17, 2)),  // hour
-                                        Int32.Parse(fixture.Substring(19, 2)),  // minute
-                                        0);                                    // second
-                                                                               // Check that fixture is within 5 days
-                if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
+                if (task.IsFaulted)
                 {
-                    // Check fixture is not in the past
-                    if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
+                    // task faulted
+                    Debug.Log("DATABASE task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    print("SUCCESS");
+                    DataSnapshot snapshot = task.Result;
+
+                    Debug.Log("DATABASE snapshot ref: " + snapshot.Reference);
+                    Debug.Log("DATABASE snapshot value: " + snapshot.Value);
+                    //db_snap = task.Result;
+                    int count = 1;
+                    Debug.Log("children count = " + snapshot.ChildrenCount);
+                    foreach (DataSnapshot snap in snapshot.Children)
                     {
                         fixture_class temp_fix = new fixture_class();
+
+                        //string ko_year = "20" + snap.Child("/date").Value.ToString().Substring(6, 2);
+                        //string ko_month = snap.Child("/date").Value.ToString().Substring(3, 2);
+                        //string ko_day = snap.Child("/date").Value.ToString().Substring(0, 2);
+                        //string ko_hour = snap.Child("/time").Value.ToString().Substring(0, 2);
+                        //string ko_min = snap.Child("/time").Value.ToString().Substring(2, 2);
+                        DateTime fix_date;
+                        fix_date = new DateTime(Int32.Parse("20" + snap.Child("/date").Value.ToString().Substring(6, 2)),
+                                                Int32.Parse(snap.Child("/date").Value.ToString().Substring(3, 2)),
+                                                Int32.Parse(snap.Child("/date").Value.ToString().Substring(0, 2)),
+                                                Int32.Parse(snap.Child("/time").Value.ToString().Substring(0, 2)),
+                                                Int32.Parse(snap.Child("/time").Value.ToString().Substring(2, 2)),
+                                                            0);
+                        print(fix_date.Day + "/" + fix_date.Month + "/" + fix_date.Year + "-" + fix_date.Hour + ":" + fix_date.Minute);
                         temp_fix.fixture_date = fix_date;
-                        temp_fix.home_team = fixture.Substring(5, 3);
-                        temp_fix.away_team = fixture.Substring(9, 3);
-                        temp_fix.match_id = fixture.Substring(0, 4);
-                        C_Fixtures.Add(temp_fix);
+                        //string the_date = ko_day + "/" + ko_month + "/" + ko_year + "-" + ko_hour + ":" + ko_min;
+                        ////Debug.Log(count + "-" + snap.Child("/home_team").Value + "-" + the_date);
+
+                        if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
+                        {
+                            temp_fix.home_team = snap.Child("/home_team").Value.ToString();
+                            temp_fix.away_team = snap.Child("/away_team").Value.ToString();
+                            temp_fix.match_id = snapshot.Value.ToString();
+                            C_Fixtures.Add(temp_fix);
+                            Debug.Log("count= " + count + "temp fix info = " + temp_fix.home_team);
+                        }
+                        count++;
                     }
+                    Debug.Log("fixture length = " + C_Fixtures.Count);
+                    // Sort fixtures by date
+                    C_Fixtures.Sort((x, y) => DateTime.Compare(x.fixture_date, y.fixture_date));
+                    Debug.Log("fixture length = " + C_Fixtures.Count);
+
+                    // Create fixture UI
+                    foreach (fixture_class fix in C_Fixtures)
+                    {
+                        Debug.Log(" call create fix ui");
+                        create_fixture_UI(fix.fixture_date,
+                                          fix.home_team,
+                                          fix.away_team,
+                                          fix.match_id);
+                    }
+                    // Add button at bottom
+                    add_prediciton_button();
 
                 }
-            }
+            });
 
-            // Sort fixtures by date
-            C_Fixtures.Sort((x, y) => DateTime.Compare(x.fixture_date, y.fixture_date));
+            
 
-            //Debug.Log(" Going to make UI");
-            // Create fixture UI
-            foreach (fixture_class fix in C_Fixtures)
-            {
-                create_fixture_UI(fix.fixture_date,
-                                  fix.home_team,
-                                  fix.away_team,
-                                  fix.match_id);
-            }
+            //Debug.Log("fixture length = " + C_Fixtures.Count);
+            //// Set up scene
+            //foreach (string fixture in Fixtures)
+            //{
+            //    //Debug.Log(fixture);
+            //    // If in future and within next week TODO: next week will need to be looked at
+            //    DateTime fix_date;
+            //    fix_date = new DateTime(Int32.Parse(fixture.Substring(30, 4)),  // year
+            //                            Int32.Parse(fixture.Substring(28, 2)),  // month
+            //                            Int32.Parse(fixture.Substring(26, 2)),  // day
+            //                            Int32.Parse(fixture.Substring(17, 2)),  // hour
+            //                            Int32.Parse(fixture.Substring(19, 2)),  // minute
+            //                            0);                                    // second
+            //                                                                   // Check that fixture is within 5 days
+            //    if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
+            //    {
+            //        // Check fixture is not in the past
+            //        if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
+            //        {
+            //            fixture_class temp_fix = new fixture_class();
+            //            temp_fix.fixture_date = fix_date;
+            //            temp_fix.home_team = fixture.Substring(5, 3);
+            //            temp_fix.away_team = fixture.Substring(9, 3);
+            //            temp_fix.match_id = fixture.Substring(0, 4);
+            //            C_Fixtures.Add(temp_fix);
+            //        }
 
-        }
+            //    }
+            //}
+
+            //// Sort fixtures by date
+            //C_Fixtures.Sort((x, y) => DateTime.Compare(x.fixture_date, y.fixture_date));
+
+            //// Create fixture UI
+            //foreach (fixture_class fix in C_Fixtures)
+            //{
+            //    create_fixture_UI(fix.fixture_date,
+            //                      fix.home_team,
+            //                      fix.away_team,
+            //                      fix.match_id);
+            //}
+
+        } // end get fixutres from firebase
+
 
         private void create_fixture_UI(DateTime ko_date, String home_team, String away_team, String match_id)
         {
+            Debug.Log("Create fixture UI");
             // Create a fixture UI element. With home & away teams with a match ID
             // This element is outlined in "Prediction_button.cs" 
             // (which is not related to the add_prediciton_button() void in this class
 
-            //Debug.Log("Creating UI element");
             // Make instance of prediction
             GameObject prediction_instance = Instantiate(_prediction_score_template);
 
@@ -200,12 +273,11 @@ namespace football_predictor
             prediction_instance.GetComponent<Prediction_button>().update_ko_time_text(ko_date);
 
             // Read from the database if user has set these scores before
-            // (make them blue)
             app = CommonData.app;
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             // Get user from authentication
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-            Debug.Log("match id is: " + match_id);
+            //Debug.Log("match id is: " + match_id);
             string match_id_str;
             if (int.Parse(match_id) < 10) // SHOULD THIS BE FIXED ON DATABASE INPUT?
             {
@@ -219,14 +291,12 @@ namespace football_predictor
             {
                 match_id_str = "match_ID" + int.Parse(match_id).ToString("000");
             }
-
-
+      
             string display_name;
             string db_path;
 
 #if (UNITY_EDITOR)
             display_name = "DESKTOP4";
-
 #else
             display_name = auth.CurrentUser.UserId;
 #endif
@@ -236,10 +306,10 @@ namespace football_predictor
                 "home_prediction";
 
             //db_path = "predictions/match_ID1/DESKTOP4/home_prediction"; // for testing
-            Debug.Log("my path: " + db_path);
+            //Debug.Log("my path: " + db_path);
             string json_test;
             json_test = JsonUtility.ToJson(db_path);
-            Debug.Log("my json: " + db_path);
+            //Debug.Log("my json: " + db_path);
 
             _prediction_database.GetReference(db_path).GetValueAsync().ContinueWith(task =>
             {
@@ -251,16 +321,15 @@ namespace football_predictor
                 else if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
-                    Debug.Log("snapshot ref: " + snapshot.Reference);
-                    Debug.Log("snapshot value: " + snapshot.Value);
+                    //Debug.Log("snapshot ref: " + snapshot.Reference);
+                    //Debug.Log("snapshot value: " + snapshot.Value);
                     prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score_text.textComponent.color = Color.blue;
                     prediction_instance.GetComponent<Prediction_button>().user_prediction_home_score = int.Parse(snapshot.Value.ToString());
                     prediction_instance.GetComponent<Prediction_button>().update_predicted_home_score();
-
                 }
             });
 
-            // Repeat for away scores TODO: tidy this up
+            // Repeat for away scores TODO: tidy this up in a looop or something
             db_path = "predictions" + "/" +
                  match_id_str + "/" +
                  display_name + "/" +
@@ -277,18 +346,14 @@ namespace football_predictor
                 else if (task.IsCompleted)
                 {
                     DataSnapshot snapshot = task.Result;
-                    Debug.Log("snapshot ref: " + snapshot.Reference);
-                    Debug.Log("snapshot value: " + snapshot.Value);
+                    //Debug.Log("snapshot ref: " + snapshot.Reference);
+                    //Debug.Log("snapshot value: " + snapshot.Value);
                     prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score_text.textComponent.color = Color.blue;
                     prediction_instance.GetComponent<Prediction_button>().user_prediction_away_score = int.Parse(snapshot.Value.ToString());
                     prediction_instance.GetComponent<Prediction_button>().update_predicted_away_score();
                 }
             });
-
-
         }
-
-
 
         private void add_prediciton_button()
         {
@@ -302,7 +367,6 @@ namespace football_predictor
             GameObject _footer_instance;
             _footer_instance = Instantiate(_footer_button);
             _footer_instance.transform.SetParent(_prediction_content.transform, false);
-
         }
 
         public void submit_predictions()
@@ -329,10 +393,6 @@ namespace football_predictor
             string match_id_json = JsonUtility.ToJson(match_id);
             string home_pred_str = JsonUtility.ToJson(home_pred);
             string away_pred_str = JsonUtility.ToJson(away_pred);
-
-            // _prediction_database = FirebaseDatabase.DefaultInstance.RootReference;
-            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
-
             string display_name;
 
             app = CommonData.app;
@@ -351,7 +411,6 @@ namespace football_predictor
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
-
 #else
             Debug.Log("in mobile");
             var user = auth.CurrentUser;
@@ -361,10 +420,6 @@ namespace football_predictor
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("home_prediction").SetValueAsync(home_pred);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("away_prediction").SetValueAsync(away_pred);
 #endif
-
-
         }
-
     }
-
 }
