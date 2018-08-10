@@ -10,14 +10,14 @@ public class Prediction_button : MonoBehaviour {
     public string away_team;
     public DateTime ko_date;
 
-    public int match_id;
-
     public int user_prediction_home_score;
     public int user_prediction_away_score;
     public Button button_home_score_increase;
     public Button button_home_score_decrease;
     public Button button_away_score_increase;
     public Button button_away_score_decrease;
+
+    public fixture_class fix;
 
     public Text home_team_text;
     public Text away_team_text;
@@ -44,17 +44,8 @@ public class Prediction_button : MonoBehaviour {
 
     }
 
-    // Update is called once per frame
-    void Update ()
-    {
-
-
-    }
-
-
     public void update_home_team_text(String home_team)
     {
-
         home_team = lookup_full_team_name(home_team);
         home_team_text.text = home_team;
     }
@@ -212,7 +203,6 @@ public class Prediction_button : MonoBehaviour {
         {
             return "Wolverhampton";
         }
-
 
         // If team not found just return abreviaiton
         return team_abv;
