@@ -326,43 +326,40 @@ namespace football_predictor
             Debug.Log("Submitting prediction for match id:" + match_id);
 
             string match_id_str = "match_ID" + match_id;
-            string match_id_json = JsonUtility.ToJson(match_id);
-            string home_pred_str = JsonUtility.ToJson(home_pred);
-            string away_pred_str = JsonUtility.ToJson(away_pred);
+            //string match_id_json = JsonUtility.ToJson(match_id);
+            //string home_pred_str = JsonUtility.ToJson(home_pred);
+            //string away_pred_str = JsonUtility.ToJson(away_pred);
 
             // _prediction_database = FirebaseDatabase.DefaultInstance.RootReference;
             //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
 
             string display_name;
+            string name_name;
 
             app = CommonData.app;
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             // Get user from authentication
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
             Debug.Log("app: " + app);
-
-#if (UNITY_EDITOR)
-            Debug.Log("in unity editor");
             Debug.Log("info: " + match_id + " " + home_pred + " " + away_pred);
             Debug.Log("mDatabaseRef: " + _prediction_database);
-
+#if (UNITY_EDITOR)
+            Debug.Log("in unity editor");
             display_name = "DESKTOP4";
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("user_name").SetRawJsonValueAsync(display_name);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
-
+            name_name = "DESKTOP4";
 #else
             Debug.Log("in mobile");
             var user = auth.CurrentUser;
-            display_name = auth.CurrentUser.DisplayName;
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("user_name").SetRawJsonValueAsync(display_name);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("match_id").SetRawJsonValueAsync(match_id);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("home_prediction").SetValueAsync(home_pred);
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(auth.CurrentUser.UserId).Child("away_prediction").SetValueAsync(away_pred);
+            display_name = auth.CurrentUser.UserId;
+            name_name =  auth.CurrentUser.DisplayName;
 #endif
 
 
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("user_name").SetValueAsync(name_name);
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
+       
         }
 
     }
