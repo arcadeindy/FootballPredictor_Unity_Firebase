@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
-//using Firebase.Messaging;
+using Firebase.Messaging;
 
 
 namespace football_predictor
@@ -104,9 +104,9 @@ namespace football_predictor
         // Handle initialization of the necessary firebase modules:
         protected void InitializeFirebase()
         {
-            //Debug.Log("Setting up firebase cloud messaging (push notifications)");
-            //Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
-            //Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
+            Debug.Log("Setting up firebase cloud messaging (push notifications)");
+            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+            Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
 
             Debug.Log("Setting up Firebase Auth");
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
@@ -144,15 +144,15 @@ namespace football_predictor
 #endif
         }
 
-        //// For cloud messaging (push notifications)
-        //public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
-        //{
-        //    UnityEngine.Debug.Log("Received Registration Token: " + token.Token);
-        //}
-        //public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
-        //{
-        //    UnityEngine.Debug.Log("Received a new message from: " + e.Message.From);
-        //}
+        // For cloud messaging (push notifications)
+        public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
+        {
+            UnityEngine.Debug.Log("Received Registration Token: " + token.Token);
+        }
+        public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
+        {
+            UnityEngine.Debug.Log("Received a new message from: " + e.Message.From);
+        }
 
 
         void StartGame()
