@@ -713,7 +713,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 812166111}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.1
+  m_Size: 0.09997882
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1049,7 +1049,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 41, y: 499.99997}
+  m_AnchoredPosition: {x: 41, y: 499.99994}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1776523509
@@ -1480,6 +1480,16 @@ Prefab:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 224357991934245538, guid: 900126ca6a105d741b6f8f8a1dfec184,
+        type: 2}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224696995104306422, guid: 900126ca6a105d741b6f8f8a1dfec184,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.000017622575
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 900126ca6a105d741b6f8f8a1dfec184, type: 2}
   m_IsPrefabParent: 0
@@ -1567,7 +1577,15 @@ MonoBehaviour:
     line to:
 
 
-    slightlyboredproductions@gmail.com'
+    slightlyboredproductions@gmail.com
+
+
+
+    Thanks:
+
+    Icons taken from: game-icons.net
+
+'
 --- !u!222 &2099791088
 CanvasRenderer:
   m_ObjectHideFlags: 0
