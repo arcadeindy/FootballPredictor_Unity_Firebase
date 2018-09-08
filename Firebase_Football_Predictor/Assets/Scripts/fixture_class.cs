@@ -32,7 +32,41 @@ namespace football_predictor
             set;
         }
 
+        public int home_result
+        {
+            get;
+            set;
+        }
 
+        public int away_result
+        {
+            get;
+            set;
+        }
+
+        public int home_prediction
+        {
+            get;
+            set;
+        }
+
+        public int away_prediction
+        {
+            get;
+            set;
+        }
+
+        public int user_score
+        {
+            get;
+            set;
+        }
+
+        public int int_id
+        {
+            get;
+            set;
+        }
     }
 
 }

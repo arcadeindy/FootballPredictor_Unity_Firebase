@@ -20,39 +20,18 @@ namespace football_predictor
         public GameObject _submit_prediction_button;
         public GameObject _footer_button;
 
+        public GameObject _no_predictions_button;
+
         // private DatabaseReference _prediction_database;
         private Firebase.Database.FirebaseDatabase _prediction_database;
         protected Firebase.Auth.FirebaseAuth auth;
         private Firebase.FirebaseApp app;
 
+        private bool any_predictions_in_seven_days = false;
 
         // Use this for initialization
         void Start()
         {
-            // needed for testing database in unity editor
-            //#if (UNITY_EDITOR)
-
-            //        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
-            //            var dependencyStatus = task.Result;
-            //            if (dependencyStatus == Firebase.DependencyStatus.Available)
-            //            {
-            //                // Set a flag here indiciating that Firebase is ready to use by your
-            //                // application.
-            //                Debug.Log("firebase ready to use");
-            //            }
-            //            else
-            //            {
-            //                UnityEngine.Debug.LogError(System.String.Format(
-            //                  "Coulds not resolve all Firebase dependencies: {0}", dependencyStatus));
-            //                // Firebase Unity SDK is not safe to use here.
-            //            }
-            //        });
-
-            //        Debug.Log("Setting up firebase database for editor");
-
-            //        FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
-
-            //#endif
             Debug.Log("STARTING PREDICTION");
             app = CommonData.app;
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
@@ -60,144 +39,31 @@ namespace football_predictor
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
             Debug.Log("app: " + app);
 
-            // Get the root reference location of the database.
-            //_prediction_database = FirebaseDatabase.DefaultInstance.RootReference;
-
             // Starts the scene
             StartGame();
-
         }
+
+
 
 
         void StartGame()
         {
             Debug.Log("Starting game...(prediction scene)");
 
-            // Remote Config data has been fetched, so this applies it for this play session:
-            Firebase.RemoteConfig.FirebaseRemoteConfig.ActivateFetched();
-            Firebase.AppOptions ops = new Firebase.AppOptions();
+            // Get fixtures from database
+            get_fixtures_from_database();
 
-            get_fixtures_from_firebase();
-            add_prediciton_button();
+            // add_prediciton_button();
+
+            check_for_error_message();
+    
         }
 
-        void get_fixtures_from_firebase()
+        void get_fixtures_from_database()
         {
-            Debug.Log("In: get_fixtures_from_firebase");
+            Debug.Log("In: get_fixtures_from_database");
 
-            List<string> Fixtures = new List<string>();
-            List<fixture_class> C_Fixtures = new List<fixture_class>();
-
-            // Check firebase for updates
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_1").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_2").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_3").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_4").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_5").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_6").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_7").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_8").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_9").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_10").StringValue);
-
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_11").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_12").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_13").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_14").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_15").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_16").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_17").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_18").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_19").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_20").StringValue);
-
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_21").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_22").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_23").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_24").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_25").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_26").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_27").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_28").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_29").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_30").StringValue);
-
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_31").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_32").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_33").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_34").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_35").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_36").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_37").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_38").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_39").StringValue);
-            Fixtures.Add(FirebaseRemoteConfig.GetValue("Match_40").StringValue);
-
-
-            // Set up scene
-            foreach (string fixture in Fixtures)
-            {
-                print(fixture);
-                // If in future and within next week TODO: next week will need to be looked at
-                DateTime fix_date;
-                fix_date = new DateTime(Int32.Parse(fixture.Substring(30, 4)),  // year
-                                        Int32.Parse(fixture.Substring(28, 2)),  // month
-                                        Int32.Parse(fixture.Substring(26, 2)),  // day
-                                        Int32.Parse(fixture.Substring(17, 2)),  // hour
-                                        Int32.Parse(fixture.Substring(19, 2)),  // minute
-                                        0);                                    // second
-                                                                               // Check that fixture is within 5 days
-                if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
-                {
-                    // Check fixture is not in the past
-                    if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
-                    {
-                        fixture_class temp_fix = new fixture_class();
-                        temp_fix.fixture_date = fix_date;
-                        temp_fix.home_team = fixture.Substring(5, 3);
-                        temp_fix.away_team = fixture.Substring(9, 3);
-                        temp_fix.match_id = fixture.Substring(0, 4);
-                        C_Fixtures.Add(temp_fix);
-                    }
-
-                }
-            }
-
-            // Sort fixtures by date
-            C_Fixtures.Sort((x, y) => DateTime.Compare(x.fixture_date, y.fixture_date));
-
-            //Debug.Log(" Going to make UI");
-            // Create fixture UI
-            foreach (fixture_class fix in C_Fixtures)
-            {
-                create_fixture_UI(fix.fixture_date,
-                                  fix.home_team,
-                                  fix.away_team,
-                                  fix.match_id);
-            }
-
-        }
-
-        private void create_fixture_UI(DateTime ko_date, String home_team, String away_team, String match_id)
-        {
-            // Create a fixture UI element. With home & away teams with a match ID
-            // This element is outlined in "Prediction_button.cs" 
-            // (which is not related to the add_prediciton_button() void in this class
-
-            //Debug.Log("Creating UI element");
-            // Make instance of prediction
-            GameObject prediction_instance = Instantiate(_prediction_score_template);
-
-            // Create prediction as child of scroll view content object
-            prediction_instance.transform.SetParent(_prediction_content.transform, false);
-
-            // Add match id
-            prediction_instance.GetComponent<Prediction_button>().match_id = int.Parse(match_id);
-            // Set team names
-            prediction_instance.GetComponent<Prediction_button>().update_home_team_text(home_team);
-            prediction_instance.GetComponent<Prediction_button>().update_away_team_text(away_team);
-            //Set ko time and date
-            prediction_instance.GetComponent<Prediction_button>().update_ko_time_text(ko_date);
+            List<fixture_class> C_Fixtures = new List<fixture_class>(); // TODO: think of better name
 
             // Read from the database if user has set these scores before
             // (make them blue)
@@ -205,35 +71,129 @@ namespace football_predictor
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             // Get user from authentication
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-            Debug.Log("match id is: " + match_id);
+
+            string path = "premier_league_fixtures";
+            _prediction_database.RootReference.Child(path).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    // task faulted
+                    Debug.Log("task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    foreach (DataSnapshot child in snapshot.Children)
+                    {
+                        //Debug.Log(child.Key);
+                        // Create temporary fixure class
+                        fixture_class fix_temp = new fixture_class();
+                        // Get match id
+                        fix_temp.match_id = child.Key;
+                        // Get home team
+                        //Debug.Log("home_team??? " + child.Child("home_team").Value);
+                        fix_temp.home_team = child.Child("home_team").Value.ToString();
+                        // Get away team
+                        //Debug.Log("away_team??? " + child.Child("away_team").Value);
+                        fix_temp.away_team = child.Child("away_team").Value.ToString();
+                        // Get date
+                        //Debug.Log("home_team??? " + child.Child("time").Value);
+                        string time = child.Child("time").Value.ToString();
+                        //Debug.Log("home_team??? " + child.Child("date").Value);
+                        string date = child.Child("date").Value.ToString();
+                        DateTime fix_date;
+                        fix_date = new DateTime(Int32.Parse("20" + date.Substring(6, 2)),  // year
+                                                Int32.Parse(date.Substring(3, 2)),  // month
+                                                Int32.Parse(date.Substring(0, 2)),  // day
+                                                Int32.Parse(time.Substring(0, 2)),  // hour
+                                                Int32.Parse(time.Substring(2, 2)),  // minute
+                                                0);                                 // second
+                        fix_temp.fixture_date = fix_date;
+                        // Add fixture to list
+                        C_Fixtures.Add(fix_temp);
+                        // See if any fixtures within 7 days (includes past)
+                        if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
+                        {
+                            // Check fixture is not in the past
+                            if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
+                            {
+                                // Create fixture UI
+                                create_fixture_UI(fix_temp);
+                                // If no fixtures going to be displayed then tell user
+                                any_predictions_in_seven_days = true;
+                                // In case error got displayed call again and it should be removed
+                                check_for_error_message();
+
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        private void create_fixture_UI(fixture_class fix)
+        {
+            Debug.Log("Creating fixture UI: " + fix.home_team + "v" + fix.away_team);
+            // Create a fixture UI element. With home & away teams with a match ID
+            // This element is outlined in "Prediction_button.cs" 
+            // (which is not related to the add_prediciton_button() void in this class
+
+            // Make instance of prediction
+            GameObject prediction_instance = Instantiate(_prediction_score_template);
+
+            // Create prediction as child of scroll view content object
+            prediction_instance.transform.SetParent(_prediction_content.transform, false);
+
+            // Add match id
+            string[] split_fix_id = fix.match_id.Split('_');
+            fix.match_id = split_fix_id[1];
+            Debug.Log("Starting to add to button, match ID: " + fix.match_id);
+            prediction_instance.GetComponent<Prediction_button>().match_id = int.Parse(fix.match_id);
+            // Set team names
+            Debug.Log("Starting to add to button, team names " + fix.home_team);
+            prediction_instance.GetComponent<Prediction_button>().update_home_team_text(fix.home_team);
+            Debug.Log("Starting to add to button, team names " + fix.away_team);
+            prediction_instance.GetComponent<Prediction_button>().update_away_team_text(fix.away_team);
+            //Set ko time and date
+            Debug.Log("Starting to add to button, date " + fix.fixture_date);
+            prediction_instance.GetComponent<Prediction_button>().update_ko_time_text(fix.fixture_date);
+
+            Debug.Log("Starting to see if user has set scores before");
+
+            Debug.Log("match id is: " + fix.match_id);
             string match_id_str;
-            if (int.Parse(match_id) < 10) // SHOULD THIS BE FIXED ON DATABASE INPUT?
+            if (int.Parse(fix.match_id) < 10) // SHOULD THIS BE FIXED ON DATABASE INPUT?
             {
-                match_id_str = "match_ID" + int.Parse(match_id).ToString("0");
+                match_id_str = "match_ID" + int.Parse(fix.match_id).ToString("0");
             }
-            else if (int.Parse(match_id) < 100)
+            else if (int.Parse(fix.match_id) < 100)
             {
-                match_id_str = "match_ID" + int.Parse(match_id).ToString("00");
+                match_id_str = "match_ID" + int.Parse(fix.match_id).ToString("00");
             }
             else //(int.Parse(match_id) < 1000) // should be increased for 10000
             {
-                match_id_str = "match_ID" + int.Parse(match_id).ToString("000");
+                match_id_str = "match_ID" + int.Parse(fix.match_id).ToString("000");
             }
 
-
+            // Read from the database if user has set these scores before
+            // (make them blue)
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            // Get user from authentication
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
             string display_name;
             string db_path;
 
 #if (UNITY_EDITOR)
             display_name = "DESKTOP4";
-
 #else
             display_name = auth.CurrentUser.UserId;
 #endif
-           db_path = "predictions" + "/" +
-                match_id_str + "/" +
-                display_name + "/" +
-                "home_prediction";
+            db_path = "predictions" + "/" +
+                 match_id_str + "/" +
+                 display_name + "/" +
+                 "home_prediction";
 
             //db_path = "predictions/match_ID1/DESKTOP4/home_prediction"; // for testing
             Debug.Log("my path: " + db_path);
@@ -284,26 +244,24 @@ namespace football_predictor
                     prediction_instance.GetComponent<Prediction_button>().update_predicted_away_score();
                 }
             });
-
-
         }
 
 
-
-        private void add_prediciton_button()
+        private void check_for_error_message()
         {
-            // Creates the button to press to submit all user predictions
-            // Should be at bottom of the prediction scene
-
-            GameObject prediction_button_instance;
-            prediction_button_instance = Instantiate(_submit_prediction_button);
-            prediction_button_instance.transform.SetParent(_prediction_content.transform, false);
-
-            GameObject _footer_instance;
-            _footer_instance = Instantiate(_footer_button);
-            _footer_instance.transform.SetParent(_prediction_content.transform, false);
-
+            // Writes message if no fixtures found within 7 days
+            if (any_predictions_in_seven_days == false)
+            {
+                _no_predictions_button.SetActive(true);
+                _submit_prediction_button.SetActive(false);
+            }
+            else
+            {
+                _no_predictions_button.SetActive(false);
+                _submit_prediction_button.SetActive(true);
+            }
         }
+
 
         public void submit_predictions()
         {
@@ -321,17 +279,12 @@ namespace football_predictor
             scene_transition_manager.GetComponent<scene_manager>().load_prediction_submitted_scene();
         }
 
+
         private void submit_prediciton(string match_id, float home_pred, float away_pred)
         {
             Debug.Log("Submitting prediction for match id:" + match_id);
 
             string match_id_str = "match_ID" + match_id;
-            //string match_id_json = JsonUtility.ToJson(match_id);
-            //string home_pred_str = JsonUtility.ToJson(home_pred);
-            //string away_pred_str = JsonUtility.ToJson(away_pred);
-
-            // _prediction_database = FirebaseDatabase.DefaultInstance.RootReference;
-            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
 
             string display_name;
             string name_name;
@@ -340,11 +293,8 @@ namespace football_predictor
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             // Get user from authentication
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-            Debug.Log("app: " + app);
-            Debug.Log("info: " + match_id + " " + home_pred + " " + away_pred);
-            Debug.Log("mDatabaseRef: " + _prediction_database);
+
 #if (UNITY_EDITOR)
-            Debug.Log("in unity editor");
             display_name = "DESKTOP4";
             name_name = "DESKTOP4";
 #else
@@ -353,15 +303,13 @@ namespace football_predictor
             display_name = auth.CurrentUser.UserId;
             name_name =  auth.CurrentUser.DisplayName;
 #endif
-
-
+            // Set the values in the database
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("match_id").SetRawJsonValueAsync(match_id);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("home_prediction").SetValueAsync(home_pred);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("user_name").SetValueAsync(name_name);
             _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child("away_prediction").SetValueAsync(away_pred);
-       
-        }
 
+        }
     }
 
 }

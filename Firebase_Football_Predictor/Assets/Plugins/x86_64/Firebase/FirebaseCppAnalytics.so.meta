@@ -3,7 +3,7 @@ guid: dfc24c17125e4a0abdae5f0814d8dfe7
 labels:
 - gvh
 - gvh_linuxlibname-FirebaseCppAnalytics
-- gvh_version-5.0.0
+- gvh_version-5.2.1
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2

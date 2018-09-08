@@ -52,7 +52,7 @@ public class Log_in_script : MonoBehaviour {
             error_text.color = Color.green;
             error_text.text = "Log in sucessful!";
             error_text.enabled = true;
-            scene_transition_manager.GetComponent<scene_manager>().load_welcome_scene();
+            scene_transition_manager.GetComponent<scene_manager>().load_user_scene();
         }
         else
         {

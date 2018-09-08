@@ -4,7 +4,7 @@ time_created: 1480838400
 labels:
 - gvh
 - gvh_linuxlibname-FirebaseCppAuth
-- gvh_v5.0.0
+- gvh_v5.2.1
 PluginImporter:
   serializedVersion: 1
   iconMap: {}

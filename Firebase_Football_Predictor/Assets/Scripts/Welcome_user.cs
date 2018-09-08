@@ -32,6 +32,9 @@ public class Welcome_user : MonoBehaviour
         {
             print("user is signed in. Email" + user.Email);
             Welcome_Text.text = "Welcome back " + user.DisplayName;
+
+            // Set last known user points
+            user_points.text = " " + PlayerPrefs.GetInt("HighScore", 0).ToString() + " ";
         }
         else
         {

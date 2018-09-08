@@ -34,6 +34,11 @@ public class scene_manager : MonoBehaviour {
         SceneManager.LoadScene("results_scene");
     }
 
+    public void load_league_scene()
+    {
+        SceneManager.LoadScene("league_scene");
+    }
+
     public void load_user_scene()
     {
         // home scene?

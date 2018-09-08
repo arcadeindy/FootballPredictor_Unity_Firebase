@@ -9,22 +9,371 @@ using Firebase.Unity.Editor;
 using UnityEngine.UI;
 using Firebase.Database;
 
-public class results_scene : MonoBehaviour {
+namespace football_predictor
+{
+    public class results_scene : MonoBehaviour
+    {
 
-    public GameObject scene_transition_manager;
+        public GameObject scene_transition_manager;
 
-    private Firebase.Database.FirebaseDatabase _prediction_database;
-    protected Firebase.Auth.FirebaseAuth auth;
-    private Firebase.FirebaseApp app;
+        // For auth and database
+        private Firebase.Database.FirebaseDatabase _prediction_database;
+        protected Firebase.Auth.FirebaseAuth auth;
+        private Firebase.FirebaseApp app;
+
+        //string user_uid; //uid
+        //string display_name; //display name
+
+        int total_user_score = 0;
+        int prediction_spot_on = 0;
+        int prediction_result_correct = 0;
+        int prediction_wrong = 0;
+        int prediction_not_made = 0;
+
+        public Text Total_score_text;
+        public Text SpotOn_text;
+        public Text CorrectResult_text;
+        public Text ResultWrong_text;
+        public Text PredictionNotMade_text;
+
+        // Variable to allow user score only to be written once to database instead of every loop
+        int results_to_check;
+
+        // Use this for initialization
+        void Start()
+        {
+            Debug.Log("in Results Scene");
+
+            // Get user from authentication
+            carry_out_firebase_auth();
+
+            // Makke empty list
+            List<fixture_class> fixtures = new List<fixture_class>();
+            get_fixtures_from_database(fixtures);
+
+            // Move to own scene
+            add_score_to_db();
 
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        }
+
+        private void Update()
+        {
+            Total_score_text.text = "Total Score : " + total_user_score;
+            SpotOn_text.text = "Spot On = " + prediction_spot_on;
+            CorrectResult_text.text = "Correct Result = " + prediction_result_correct;
+            ResultWrong_text.text = "Wrong = " + prediction_wrong;
+            PredictionNotMade_text.text = "Prediction not made = " + prediction_not_made;
+        }
+
+        void carry_out_firebase_auth()
+        {
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+        }
+
+
+        void get_fixtures_from_database(List<fixture_class> fixture_class_list)
+        {
+            Debug.Log("Getting fixtures from database");
+
+            //// Get user home score prediction from database
+            //app = CommonData.app;
+            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            // Get user home score prediction from database
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            string path = "premier_league_fixtures";
+
+            _prediction_database.RootReference.Child(path).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    // task faulted
+                    Debug.Log("task faulted");
+                    Total_score_text.text = "task faulted";
+                }
+                else if (task.IsCompleted)
+                {
+                    results_to_check = 0;
+
+                    DataSnapshot snapshot = task.Result;
+                    foreach (DataSnapshot child in snapshot.Children)
+                    {
+                        fixture_class fix_temp = new fixture_class();
+                        fix_temp.match_id = child.Key;
+                        fix_temp.home_team = child.Child("home_team").Value.ToString();
+                        fix_temp.away_team = child.Child("away_team").Value.ToString();
+
+                        fix_temp.home_result = int.Parse(child.Child("home_score").Value.ToString());
+                        fix_temp.away_result = int.Parse(child.Child("away_score").Value.ToString());
+
+                        //fixture_class_list.Add(fix_temp);
+                        if (fix_temp.home_result > -1 && fix_temp.away_result > -1)
+                        {
+                            // NOW CHECK RESULTS
+                            check_home_prediction(fix_temp);
+
+                            // Add to total results to check
+                            results_to_check++;
+                        }
+                    }
+                }
+            });
+        }
+
+        private void check_home_prediction(fixture_class fix)
+        {
+            string pred_team = "home_prediction";
+
+            // Get user home score prediction from database
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            string match_id_str = "match_ID" + int.Parse(fix.match_id.Substring(6, 3));
+
+            string uid;
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+#if (UNITY_EDITOR)
+            uid = "DESKTOP4";
+#else
+            var user = auth.CurrentUser;
+            uid = auth.CurrentUser.UserId;
+#endif    
+            string path = "predictions" + "/" + match_id_str + "/" + uid + "/" + pred_team;
+            //Debug.Log("path = " + path);
+
+            // Check if user has made a prediction
+            // TODO: make more efficient
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.Log("Task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    if(snapshot.HasChild(uid) == false)
+                    {
+                        prediction_not_made++;
+                    }
+
+                }
+            });
+
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(uid).Child(pred_team).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    // task faulted
+                    Debug.Log("task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    int score_out;
+                    if (int.TryParse(snapshot.Value.ToString(), out score_out))
+                    {
+                        fix.home_prediction = score_out;
+                        // Home prediction done, next up away prediction
+                        check_away_prediction(fix);
+                    }
+                    else
+                    {
+                        // Add to prediction not made count
+                        prediction_not_made++;
+                    }
+
+                }
+            });
+        }
+
+        private void check_away_prediction(fixture_class fix)
+        {
+            string pred_team = "away_prediction";
+
+            // Get user home score prediction from database
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            string match_id_str = "match_ID" + int.Parse(fix.match_id.Substring(6, 3));
+            string display_name;
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+#if (UNITY_EDITOR)
+            display_name = "DESKTOP4";
+#else
+            var user = auth.CurrentUser;
+            display_name = auth.CurrentUser.UserId;
+            var name_name =  auth.CurrentUser.DisplayName;
+#endif    
+            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child(pred_team).GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    // task faulted
+                    Debug.Log("task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    //Debug.Log("SNAPSHOT REF: " + snapshot.Reference + "\n value = " + snapshot.Value);
+
+                    fix.away_prediction = int.Parse(snapshot.Value.ToString());
+                    check_score(fix);
+                }
+            });
+        }
+
+        private void check_score(fixture_class fix)
+        {
+            //Debug.Log("Checking scores");
+
+            //Debug.Log("Checking Predictions");
+            //Debug.Log("Result     = " + fix.home_result + " v " + fix.away_result);
+            //Debug.Log("Prediction = " + fix.home_prediction + " v " + fix.away_prediction);
+
+            // Check scores are postive (have been updated)
+            if (fix.home_prediction < 0 || fix.away_prediction < 0 || fix.home_result < 0 || fix.away_result < 0)
+            {
+                // If user has not made a prediction award 0 (should not get this far)
+                fix.user_score = 0;
+            }
+            else
+            {
+                // if home score and away score exactly correct award 30 points
+                if (fix.home_prediction == fix.home_result && fix.away_prediction == fix.away_result)
+                {
+                    fix.user_score = 30;
+                    prediction_spot_on++;
+                }
+                // If the user didnt get it spot on see if the result was correct
+                else
+                {
+                    // Did home team win and did user predict that?
+                    if (fix.home_result > fix.away_result && fix.home_prediction > fix.away_prediction)
+                    {
+                        // award 10 points
+                        fix.user_score = 10;
+                        prediction_result_correct++;
+                    }
+                    // DId away team win and did user predict that?
+                    else if (fix.away_result > fix.home_result && fix.away_prediction > fix.home_prediction)
+                    {
+                        // award 10 points
+                        fix.user_score = 10;
+                        prediction_result_correct++;
+                    }
+                    // Was it a draw and did the user predict that?
+                    else if (fix.home_result == fix.away_result && fix.home_prediction == fix.away_prediction)
+                    {
+                        //draw - give 10 points
+                        fix.user_score = 10;
+                        prediction_result_correct++;
+                    }
+                    // Was the user wrong?
+                    else
+                    {
+                        // no points
+                        fix.user_score = 0;
+                        prediction_wrong++;
+                    }
+                }
+            }
+            total_user_score = total_user_score + fix.user_score;
+            //Debug.Log("TOTAL USER SCORE" + total_user_score);
+            //Debug.Log("SPOT ON = " + prediction_spot_on);
+            //Debug.Log("CORRECT RESULT = " + prediction_result_correct);
+            //Debug.Log("Prediction wrong = " + prediction_wrong);
+            //Debug.Log("Prediction not made = " + prediction_not_made);
+            //Debug.Log("total things to check = " + results_to_check);
+
+            // TODO: MAKE SO DONE ONCE ALL SCORES CHECKED (ONLY DO ONCE)
+            save_score_player_prefs();
+        }
+
+        private void save_score_player_prefs()
+        {
+            //Get the highScore from player prefs if it is there, 0 otherwise.
+            int highScore;
+            highScore = PlayerPrefs.GetInt("HighScore", 0);
+            //If our scoree is greter than highscore, set new higscore and save.
+            if (total_user_score > highScore)
+            {
+                PlayerPrefs.SetInt("HighScore", total_user_score);
+                PlayerPrefs.Save();
+            }
+        }
+
+        private void add_score_to_db()
+        {
+            Debug.Log("ADDING SCORE TO DATABASE");
+
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            // Get user from authentication
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+
+            string display_name;
+            string user_id;
+#if (UNITY_EDITOR)
+            user_id = "DESKTOP4";
+            display_name = "DESKTOP4";
+#else
+            Debug.Log("in mobile");
+            var user = auth.CurrentUser;
+            user_id = auth.CurrentUser.UserId;
+            display_name =  auth.CurrentUser.DisplayName;
+#endif
+            //// Move to sign in or something? Should not need to add each time TODO:
+            //_prediction_database.RootReference.Child("users").Child(user_id).SetValueAsync(display_name);
+            // Set the values in the database
+            //_prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).SetValueAsync(total_user_score);
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("name").SetValueAsync(display_name);
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("score").SetValueAsync(PlayerPrefs.GetInt("HighScore",110)); // total_user_score
+
+            get_global_position();
+        }
+
+        private void get_global_position()
+        {
+            // Just find rank of total score for all users
+            // Would be nice if this makes a table in future for all users
+            app = CommonData.app;
+            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            string path = "user_scores";
+
+            Query myquery = _prediction_database.RootReference.Child(path).Child("premier_league").OrderByChild("score");
+
+            myquery.GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Debug.Log("task faulted");
+                }
+                else if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+                    Debug.Log("SNAPSHOT value = " + snapshot.Value);
+                    Debug.Log("SNAPSHOT key = " + snapshot.Key);
+                    Debug.Log("SNAPSHOT reference = " + snapshot.Reference);
+                    Debug.Log("top score? = " + snapshot.Child("score").Value);
+
+                }
+            });
+            //_prediction_database.RootReference.Child(path).Child("premier_league").GetValueAsync().ContinueWith(task =>
+            //{
+            //    if (task.IsFaulted)
+            //    {
+            //        // task faulted
+            //        Debug.Log("task faulted");
+            //        Total_score_text.text = "task faulted";
+            //    }
+            //    else if (task.IsCompleted)
+            //    {
+            //        DataSnapshot snapshot = task.Result;
+
+            //        Debug.Log("SNAPSHOT = " + snapshot.Reference);
+
+            //    }
+            //});
+        }
+    }
 }

@@ -809,6 +809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scene_transition_manager: {fileID: 178010058}
   Text_field: {fileID: 403189069}
+  user_points: {fileID: 442867662}
   Delete_text_field: {fileID: 0}
 --- !u!4 &714094989
 Transform:

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
+//using Firebase.Messaging;
 
 
 namespace football_predictor
@@ -37,7 +38,7 @@ namespace football_predictor
         new Dictionary<string, Firebase.Auth.FirebaseUser>();
 
         //public GUISkin fb_GUISkin;
-        private string logText = "";
+        //private string logText = "";
         protected string email = "";
         protected string password = "";
         protected string displayName = "";
@@ -52,17 +53,16 @@ namespace football_predictor
         // NOTE: In some versions of Unity the password input box does not work in
         // iOS simulators.
         public bool usePasswordInput = false;
-        private Vector2 controlsScrollViewVector = Vector2.zero;
-        private Vector2 LogScrollViewVector = Vector2.zero;
+        //private Vector2 controlsScrollViewVector = Vector2.zero;
+        //private Vector2 LogScrollViewVector = Vector2.zero;
 
-        private Vector2 scrollViewVector = Vector2.zero;
-        private Vector2 LogViewVector = Vector2.zero;
+        //private Vector2 scrollViewVector = Vector2.zero;
+        //private Vector2 LogViewVector = Vector2.zero;
 
         // Set the phone authentication timeout to a minute.
         private uint phoneAuthTimeoutMs = 60 * 1000;
         // The verification id needed along with the sent code for phone authentication.
         private string phoneAuthVerificationId;
-
 
         // ALAN
         Dictionary<string, object> defaults = new Dictionary<string, object>();
@@ -96,11 +96,18 @@ namespace football_predictor
                       "Could not resolve all Firebase dependencies: " + dependencyStatus);
                 }
             });
+#if UNITY_EDITOR
+            StartGame(); // FOR DESKTOP
+#endif
         }
 
         // Handle initialization of the necessary firebase modules:
         protected void InitializeFirebase()
         {
+            //Debug.Log("Setting up firebase cloud messaging (push notifications)");
+            //Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+            //Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
+
             Debug.Log("Setting up Firebase Auth");
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
             auth.StateChanged += AuthStateChanged;
@@ -126,13 +133,26 @@ namespace football_predictor
                 }
             }
             AuthStateChanged(this, null);
-
+#if UNITY_EDITOR
+            System.Threading.Tasks.Task.WhenAll(InitializeRemoteConfig());
+#else
             // Initialise remote config
             Debug.Log("InitializeFirebaseComponents...(remote config)");
             System.Threading.Tasks.Task.WhenAll(
                 InitializeRemoteConfig()
-              ).ContinueWith(task => { StartGame(); });
+                ).ContinueWith(task => { StartGame(); });
+#endif
         }
+
+        //// For cloud messaging (push notifications)
+        //public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
+        //{
+        //    UnityEngine.Debug.Log("Received Registration Token: " + token.Token);
+        //}
+        //public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
+        //{
+        //    UnityEngine.Debug.Log("Received a new message from: " + e.Message.From);
+        //}
 
 
         void StartGame()
@@ -143,25 +163,27 @@ namespace football_predictor
             CommonData.app.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
             //FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
 #endif
-
+            auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
             var user = auth.CurrentUser;
             if (user != null)
             {
                 Debug.Log("user is signed in");
                 Welcome_Text.text = "Welcome back " + user.DisplayName;
+                CommonData.first_home_view = true;
+                scene_transition_manager.GetComponent<scene_manager>().load_user_scene();
             }
             else
             {
                 Debug.Log("user is not signed in");
                 scene_transition_manager.GetComponent<scene_manager>().load_no_user_scene();
             }
-
         }
 
         //Sets the default values for remote config.These are the values that will
         //be used if we haven't fetched yet.
         System.Threading.Tasks.Task InitializeRemoteConfig()
         {
+            // TODO CAN REMOVE
 
             // Adding first match as a test
             // Match ID and Team names and Time and Date
