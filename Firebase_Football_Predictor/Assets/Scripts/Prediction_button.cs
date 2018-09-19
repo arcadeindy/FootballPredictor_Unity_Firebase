@@ -4,7 +4,8 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
-public class Prediction_button : MonoBehaviour {
+public class Prediction_button : MonoBehaviour
+{
 
     public string home_team;
     public string away_team;
@@ -29,10 +30,10 @@ public class Prediction_button : MonoBehaviour {
     public InputField user_prediction_away_score_text;
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
-        user_prediction_home_score = 0;
-        user_prediction_away_score = 0;
+        //user_prediction_home_score = 0;
+        //user_prediction_away_score = 0;
         user_prediction_home_score_text.text = user_prediction_home_score.ToString();
         user_prediction_away_score_text.text = user_prediction_away_score.ToString();
 
@@ -44,17 +45,10 @@ public class Prediction_button : MonoBehaviour {
 
     }
 
-    // Update is called once per frame
-    void Update ()
-    {
-
-
-    }
-
 
     public void update_home_team_text(String home_team)
     {
-
+        Debug.Log("home team is = " + home_team);
         home_team = lookup_full_team_name(home_team);
         home_team_text.text = home_team;
     }
@@ -108,7 +102,7 @@ public class Prediction_button : MonoBehaviour {
 
     public void decrease_away_score()
     {
-        if(user_prediction_away_score > 0)
+        if (user_prediction_away_score > 0)
         {
             user_prediction_away_score_text.textComponent.color = Color.black;
             user_prediction_away_score--;
@@ -118,7 +112,7 @@ public class Prediction_button : MonoBehaviour {
 
     private String lookup_full_team_name(String team_abv)
     {
-        if(team_abv == "BOU")
+        if (team_abv == "BOU")
         {
             return "Bournemouth";
         }

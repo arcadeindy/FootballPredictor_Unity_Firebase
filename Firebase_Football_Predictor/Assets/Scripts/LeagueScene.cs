@@ -20,6 +20,9 @@ namespace football_predictor
 
         public GameObject _entry_template;
 
+        public GameObject _loading_cover;
+        private bool reload_asked;
+
         // For auth and database
         private Firebase.Database.FirebaseDatabase _prediction_database;
         protected Firebase.Auth.FirebaseAuth auth;
@@ -36,6 +39,20 @@ namespace football_predictor
             // Get position in league
             get_global_position();
 
+            reload_asked = false;
+        }
+
+        private void Update()
+        {
+            if (reload_asked)
+            {
+                if (CommonData._loaded_fixtures &&
+                    CommonData._loaded_scores)
+                {
+                    // Load scene again
+                    scene_transition_manager.GetComponent<scene_manager>().load_league_scene();
+                }
+            }
         }
 
 
@@ -49,44 +66,28 @@ namespace football_predictor
         {
             // Just find rank of total score for all users
             // Would be nice if this makes a table in future for all users
-            app = CommonData.app;
-            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
-            string path = "user_scores";
 
-            Query myquery = _prediction_database.RootReference.Child(path).Child("premier_league").OrderByChild("score"); // is limit to last X will give highest
-
-            myquery.GetValueAsync().ContinueWith(task =>
+            // Going to try and store results in arrays as quicker than list - although fixed in size - BUT WE KNOW THE SIZE!
+            // Create arrays for user name and user score
+            string[] global_user_names = new string[CommonData._database_scores.ChildrenCount];
+            int[] global_user_scores = new int[CommonData._database_scores.ChildrenCount];
+            // Loop over snapshot children
+            int count = 0;
+            foreach (DataSnapshot snapshotChild in CommonData._database_scores.Children)
             {
-                if (task.IsFaulted)
-                {
-                    Debug.Log("task faulted");
-                }
-                else if (task.IsCompleted)
-                {
+                string user_name = snapshotChild.Child("name").Value.ToString();
+                int user_score = int.Parse(snapshotChild.Child("score").Value.ToString());
+                Debug.Log("user = " + user_name + ", score = " + user_score);
 
-                    DataSnapshot snapshot = task.Result;
-                    // Going to try and store results in arrays as quicker than list - although fixed in size - BUT WE KNOW THE SIZE!
-                    // Create arrays for user name and user score
-                    string[] global_user_names = new string[snapshot.ChildrenCount];
-                    int[] global_user_scores = new int[snapshot.ChildrenCount];
-                    // Loop over snapshot children
-                    int count = 0;
-                    foreach (DataSnapshot snapshotChild in snapshot.Children)
-                    {
-                        string user_name = snapshotChild.Child("name").Value.ToString();
-                        int user_score = int.Parse(snapshotChild.Child("score").Value.ToString());
-                        Debug.Log("user = " + user_name + ", score = " + user_score);
+                // Add values found to arrays (so can reverse later, as currently in ascending order)
+                global_user_names[count] = user_name;
+                global_user_scores[count] = user_score;
+                count++;
+            }
+            // Call task to create UI
+            Debug.Log("CALLING CREATE LEAGUE UI");
+            create_global_league_UI(global_user_names, global_user_scores);
 
-                        // Add values found to arrays (so can reverse later, as currently in ascending order)
-                        global_user_names[count] = user_name;
-                        global_user_scores[count] = user_score;
-                        count++;
-                    }
-                    // Call task to create UI
-                    Debug.Log("CALLING CREATE LEAGUE UI");
-                    create_global_league_UI(global_user_names, global_user_scores);
-                }
-            });
         }
 
         private void create_global_league_UI(string[] users, int[] scores)
@@ -128,5 +129,35 @@ namespace football_predictor
             _table_entry.SetActive(true);
         }
 
+        public void update_and_refresh()
+        {
+            // Update results and scores
+            // Get predictions from database
+            database_caller dgp = new database_caller();
+            //CommonData._loaded_predictions = false;
+            //dgp.get_predictions_from_database();
+
+            // Get fixtures and results
+            CommonData._loaded_fixtures = false;
+            dgp.get_fixtures_and_results_from_database();
+
+            // Get scores from database
+            CommonData._loaded_scores = false;
+            dgp.get_scores_from_database();
+
+            reload_asked = true;
+
+            // Show loading screen if it is not being shown
+            if (_loading_cover.activeInHierarchy == false)
+            {
+                _loading_cover.SetActive(true);
+            }
+            
+            _loading_cover.SetActive(false);
+
+        }
+
     }
+
+
 }

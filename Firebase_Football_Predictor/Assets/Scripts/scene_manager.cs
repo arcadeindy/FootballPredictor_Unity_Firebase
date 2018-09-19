@@ -39,6 +39,11 @@ public class scene_manager : MonoBehaviour {
         SceneManager.LoadScene("league_scene");
     }
 
+    public void load_home_scene()
+    {
+        SceneManager.LoadScene("home_scene");
+    }
+
     public void load_user_scene()
     {
         // home scene?
@@ -66,6 +71,11 @@ public class scene_manager : MonoBehaviour {
     public void load_login_scene()
     {
         SceneManager.LoadScene("log_in_scene");
+    }
+
+    public void load_password_reset_scene()
+    {
+        SceneManager.LoadScene("password_reset_scene");
     }
 
     public void load_signup_scene()

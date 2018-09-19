@@ -54,7 +54,6 @@ namespace football_predictor
             // Move to own scene
             add_score_to_db();
 
-
         }
 
         private void Update()
@@ -82,43 +81,28 @@ namespace football_predictor
             // Get user home score prediction from database
             app = CommonData.app;
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
-            string path = "premier_league_fixtures";
+            //string path = "premier_league_fixtures";
 
-            _prediction_database.RootReference.Child(path).GetValueAsync().ContinueWith(task =>
+            foreach (DataSnapshot child in CommonData._database_fixtures.Children)
             {
-                if (task.IsFaulted)
+                fixture_class fix_temp = new fixture_class();
+                fix_temp.match_id = child.Key;
+                fix_temp.home_team = child.Child("home_team").Value.ToString();
+                fix_temp.away_team = child.Child("away_team").Value.ToString();
+
+                fix_temp.home_result = int.Parse(child.Child("home_score").Value.ToString());
+                fix_temp.away_result = int.Parse(child.Child("away_score").Value.ToString());
+
+                //fixture_class_list.Add(fix_temp);
+                if (fix_temp.home_result > -1 && fix_temp.away_result > -1)
                 {
-                    // task faulted
-                    Debug.Log("task faulted");
-                    Total_score_text.text = "task faulted";
+                    // NOW CHECK RESULTS
+                    check_home_prediction(fix_temp);
+
+                    // Add to total results to check
+                    results_to_check++;
                 }
-                else if (task.IsCompleted)
-                {
-                    results_to_check = 0;
-
-                    DataSnapshot snapshot = task.Result;
-                    foreach (DataSnapshot child in snapshot.Children)
-                    {
-                        fixture_class fix_temp = new fixture_class();
-                        fix_temp.match_id = child.Key;
-                        fix_temp.home_team = child.Child("home_team").Value.ToString();
-                        fix_temp.away_team = child.Child("away_team").Value.ToString();
-
-                        fix_temp.home_result = int.Parse(child.Child("home_score").Value.ToString());
-                        fix_temp.away_result = int.Parse(child.Child("away_score").Value.ToString());
-
-                        //fixture_class_list.Add(fix_temp);
-                        if (fix_temp.home_result > -1 && fix_temp.away_result > -1)
-                        {
-                            // NOW CHECK RESULTS
-                            check_home_prediction(fix_temp);
-
-                            // Add to total results to check
-                            results_to_check++;
-                        }
-                    }
-                }
-            });
+            }
         }
 
         private void check_home_prediction(fixture_class fix)
@@ -126,8 +110,8 @@ namespace football_predictor
             string pred_team = "home_prediction";
 
             // Get user home score prediction from database
-            app = CommonData.app;
-            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            //app = CommonData.app;
+            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             string match_id_str = "match_ID" + int.Parse(fix.match_id.Substring(6, 3));
 
             string uid;
@@ -138,88 +122,68 @@ namespace football_predictor
             var user = auth.CurrentUser;
             uid = auth.CurrentUser.UserId;
 #endif    
-            string path = "predictions" + "/" + match_id_str + "/" + uid + "/" + pred_team;
-            //Debug.Log("path = " + path);
 
-            // Check if user has made a prediction
-            // TODO: make more efficient
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).GetValueAsync().ContinueWith(task =>
+            if(CommonData._database_predictions.Child(match_id_str).Child(uid).Child(pred_team).Value != null)
             {
-                if (task.IsFaulted)
+                int score_out;
+                if (int.TryParse(CommonData._database_predictions.Child(match_id_str).Child(uid).Child(pred_team).Value.ToString(), out score_out))
                 {
-                    Debug.Log("Task faulted");
+                    fix.home_prediction = score_out;
+                    // Home prediction done, next up away prediction
+                    check_away_prediction(fix);
                 }
-                else if (task.IsCompleted)
+                else
                 {
-                    DataSnapshot snapshot = task.Result;
-                    if(snapshot.HasChild(uid) == false)
-                    {
-                        prediction_not_made++;
-                    }
-
+                    // Add to prediction not made count
+                    prediction_not_made++;
                 }
-            });
-
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(uid).Child(pred_team).GetValueAsync().ContinueWith(task =>
+            }
+            else
             {
-                if (task.IsFaulted)
-                {
-                    // task faulted
-                    Debug.Log("task faulted");
-                }
-                else if (task.IsCompleted)
-                {
-                    DataSnapshot snapshot = task.Result;
-                    int score_out;
-                    if (int.TryParse(snapshot.Value.ToString(), out score_out))
-                    {
-                        fix.home_prediction = score_out;
-                        // Home prediction done, next up away prediction
-                        check_away_prediction(fix);
-                    }
-                    else
-                    {
-                        // Add to prediction not made count
-                        prediction_not_made++;
-                    }
+                // Add to prediction not made count
+                prediction_not_made++;
+            }
 
-                }
-            });
+
         }
 
         private void check_away_prediction(fixture_class fix)
         {
             string pred_team = "away_prediction";
 
-            // Get user home score prediction from database
-            app = CommonData.app;
-            _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            // Get user away score prediction from database
+            //app = CommonData.app;
+            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             string match_id_str = "match_ID" + int.Parse(fix.match_id.Substring(6, 3));
-            string display_name;
+            string uid;
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 #if (UNITY_EDITOR)
-            display_name = "DESKTOP4";
+            uid = "DESKTOP4";
 #else
             var user = auth.CurrentUser;
-            display_name = auth.CurrentUser.UserId;
-            var name_name =  auth.CurrentUser.DisplayName;
+            uid = auth.CurrentUser.UserId;
 #endif    
-            _prediction_database.RootReference.Child("predictions").Child(match_id_str).Child(display_name).Child(pred_team).GetValueAsync().ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    // task faulted
-                    Debug.Log("task faulted");
-                }
-                else if (task.IsCompleted)
-                {
-                    DataSnapshot snapshot = task.Result;
-                    //Debug.Log("SNAPSHOT REF: " + snapshot.Reference + "\n value = " + snapshot.Value);
 
-                    fix.away_prediction = int.Parse(snapshot.Value.ToString());
+            if(CommonData._database_predictions.Child(match_id_str).Child(uid).Child(pred_team).Value != null)
+            {
+                int score_out;
+                if (int.TryParse(CommonData._database_predictions.Child(match_id_str).Child(uid).Child(pred_team).Value.ToString(), out score_out))
+                {
+                    fix.away_prediction = score_out;
+                    // Home prediction done, next up away prediction
                     check_score(fix);
                 }
-            });
+                else
+                {
+                    // Add to prediction not made count
+                    prediction_not_made++;
+                }
+            }
+            else
+            {
+                // Add to prediction not made count
+                prediction_not_made++;
+            }
         }
 
         private void check_score(fixture_class fix)

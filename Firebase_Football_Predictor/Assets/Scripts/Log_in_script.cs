@@ -29,7 +29,6 @@ public class Log_in_script : MonoBehaviour {
 
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
-
     }
 
     public void LogInButtonPressed()
@@ -50,14 +49,14 @@ public class Log_in_script : MonoBehaviour {
         {
             Debug.Log("user is signed in");
             error_text.color = Color.green;
-            error_text.text = "Log in sucessful!";
+            error_text.text = "Log in successful!";
             error_text.enabled = true;
-            scene_transition_manager.GetComponent<scene_manager>().load_user_scene();
+            scene_transition_manager.GetComponent<scene_manager>().load_home_scene();
         }
         else
         {
             Debug.Log("user is not signed in");
-            error_text.text = "Log in unsucessful!";
+            error_text.text = "Log in unsuccessful!";
             error_text.enabled = true;
         }
     }

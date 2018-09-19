@@ -19,6 +19,9 @@ namespace football_predictor
 
         public Text Welcome_Text;
 
+        public GameObject loading_cover;
+        public GameObject loaded_button;
+
         //If user not signed in then add option to sign up!
 
         // Once signed up unlock all other scenes...
@@ -96,17 +99,74 @@ namespace football_predictor
                       "Could not resolve all Firebase dependencies: " + dependencyStatus);
                 }
             });
+
 #if UNITY_EDITOR
+            //Firebase.AppOptions ops = new Firebase.AppOptions();
+            //CommonData.app = Firebase.FirebaseApp.Create(ops);
+            //CommonData.app.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
+
+            //// Get fixtures and results from database
+            //database_get_fixtures dgf = new database_get_fixtures();
+            //dgf.get_fixtures_and_results_from_database();
+
+            //// Get predictions from database
+            //database_get_predictions dgp = new database_get_predictions();
+            //dgp.get_predictions_from_database();
+
             StartGame(); // FOR DESKTOP
 #endif
         }
+
+        void Update()
+        {
+            // Needs to listen for this to be done
+            if (CommonData._loaded_predictions &&
+                CommonData._loaded_fixtures &&
+                CommonData._loaded_scores)
+            {
+                // If loaded all databases
+                // Button to procede appears
+                //loaded_button.SetActive(true);
+
+                // atm proceede to home screen. When football implemented then if user touches button appears
+                scene_transition_manager.GetComponent<scene_manager>().load_home_scene();
+
+                //// Set loading cover to false
+                //loading_cover.SetActive(false);
+            }
+            else
+            {
+                loading_cover.SetActive(true);
+
+            }
+
+        }
+
 
         // Handle initialization of the necessary firebase modules:
         protected void InitializeFirebase()
         {
             Debug.Log("Setting up firebase cloud messaging (push notifications)");
-            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+            // Prevent the app from requesting permission to show notifications
+            // immediately upon being initialized. Since it the prompt is being
+            // suppressed, we must manually display it with a call to
+            // RequestPermission() elsewhere.
+            Firebase.Messaging.FirebaseMessaging.TokenRegistrationOnInitEnabled = false;
             Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
+            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+            // IS BELOW NEEDED?
+            Firebase.Messaging.FirebaseMessaging.SubscribeAsync("topic").ContinueWith(task => {
+                LogTaskCompletion(task, "SubscribeAsync");
+            });
+            Debug.Log("Firebase Messaging Initialized");
+            // This will display the prompt to request permission to receive
+            // notifications if the prompt has not already been displayed before. (If
+            // the user already responded to the prompt, thier decision is cached by
+            // the OS and can be changed in the OS settings).
+            Firebase.Messaging.FirebaseMessaging.RequestPermissionAsync().ContinueWith(task => {
+                LogTaskCompletion(task, "RequestPermissionAsync");
+            });
+
 
             Debug.Log("Setting up Firebase Auth");
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
@@ -159,19 +219,40 @@ namespace football_predictor
         {
             Firebase.AppOptions ops = new Firebase.AppOptions();
             CommonData.app = Firebase.FirebaseApp.Create(ops);
-#if UNITY_EDITOR
-            CommonData.app.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
-            //FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
-#endif
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
             var user = auth.CurrentUser;
+
+#if UNITY_EDITOR
+            CommonData.app.SetEditorDatabaseUrl("https://unityfirebasefootballpredictor.firebaseio.com/");
+#endif
+
+            //// Get fixtures and results from database
+            //database_get_fixtures dgf = new database_get_fixtures();
+            //dgf.get_fixtures_and_results_from_database();
+
+            // Get predictions from database
+            database_caller dgp = new database_caller();
+            CommonData._loaded_predictions = false;
+            dgp.get_predictions_from_database();
+
+            // Get fixtures and results
+            CommonData._loaded_fixtures = false;
+            dgp.get_fixtures_and_results_from_database();
+
+            // Get scores from database
+            CommonData._loaded_scores = false;
+            dgp.get_scores_from_database();
+
+            // If user is signed in
             if (user != null)
             {
-                Debug.Log("user is signed in");
-                Welcome_Text.text = "Welcome back " + user.DisplayName;
-                CommonData.first_home_view = true;
-                scene_transition_manager.GetComponent<scene_manager>().load_user_scene();
-            }
+                    Debug.Log("user is signed in");
+                    Welcome_Text.text = "Welcome back " + user.DisplayName;
+                    CommonData.first_home_view = true;
+
+                    //scene_transition_manager.GetComponent<scene_manager>().load_home_scene();
+                }
+            // If user is not signed in
             else
             {
                 Debug.Log("user is not signed in");
@@ -235,14 +316,14 @@ namespace football_predictor
             return Firebase.RemoteConfig.FirebaseRemoteConfig.FetchAsync(System.TimeSpan.Zero);
         }
 
-        // Exit if escape (or back, on mobile) is pressed.
-        protected virtual void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                Application.Quit();
-            }
-        }
+        //// Exit if escape (or back, on mobile) is pressed.
+        //protected virtual void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Escape))
+        //    {
+        //        Application.Quit();
+        //    }
+        //}
 
         void OnDestroy()
         {

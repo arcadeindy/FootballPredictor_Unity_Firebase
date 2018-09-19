@@ -66,7 +66,7 @@ namespace football_predictor
             if (user != null)
             {
                 Debug.Log("user is signed in");
-                scene_transition_manager.GetComponent<scene_manager>().load_user_scene();
+                scene_transition_manager.GetComponent<scene_manager>().load_home_scene();
             }
             else
             {
