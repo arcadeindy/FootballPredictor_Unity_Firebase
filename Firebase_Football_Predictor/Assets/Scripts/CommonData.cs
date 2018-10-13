@@ -26,6 +26,9 @@ namespace football_predictor
         public static DataSnapshot _database_scores;
         public static bool _loaded_scores;
 
+        // User matchday score array
+        public static int[] user_matchday_scores = new int[38];
+
     }
 
 }

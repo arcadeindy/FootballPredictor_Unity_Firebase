@@ -189,6 +189,7 @@ namespace football_predictor
             //Set ko time and date
             //Debug.Log("Starting to add to button, date " + fix.fixture_date);
             prediction_instance.GetComponent<Prediction_button>().ko_date = fix.fixture_date;
+            prediction_instance.GetComponent<Prediction_button>().update_ko_time_text(fix.fixture_date);
 
             // Check if home prediction exists (might not have been made)
             if (CommonData._database_predictions.Child(match_id_str).Child(user_id).Child("home_prediction").Value != null)

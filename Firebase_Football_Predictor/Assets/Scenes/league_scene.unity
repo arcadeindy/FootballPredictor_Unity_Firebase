@@ -1100,7 +1100,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 812166111}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99924093
+  m_Size: 0.9992357
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2068,6 +2068,8 @@ MonoBehaviour:
   _scrollbar_content: {fileID: 1776523507}
   _entry_template: {fileID: 1957560733}
   _loading_cover: {fileID: 1052366636}
+  table_vars:
+  - score
 --- !u!4 &1524443934
 Transform:
   m_ObjectHideFlags: 0
@@ -2195,7 +2197,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 9, y: 425}
+  m_AnchoredPosition: {x: 9, y: 425.00003}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1776523509

@@ -44,6 +44,14 @@ namespace football_predictor
         {
             Debug.Log("in Results Scene");
 
+            // Rest due to bug FIXME:
+            PlayerPrefs.DeleteKey("HighestWeeklyScore");
+            PlayerPrefs.SetInt("HighestWeeklyScore", 0);
+            for (int i = 0; i < CommonData.user_matchday_scores.Length; i++)
+            {
+                CommonData.user_matchday_scores[i] = 0;
+            }
+
             // Get user from authentication
             carry_out_firebase_auth();
 
@@ -75,23 +83,38 @@ namespace football_predictor
         {
             Debug.Log("Getting fixtures from database");
 
-            //// Get user home score prediction from database
-            //app = CommonData.app;
-            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             // Get user home score prediction from database
             app = CommonData.app;
             _prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
-            //string path = "premier_league_fixtures";
 
             foreach (DataSnapshot child in CommonData._database_fixtures.Children)
             {
                 fixture_class fix_temp = new fixture_class();
+
+                // If match is in the future then dont bother and skip
+                string time = child.Child("time").Value.ToString();
+                string date = child.Child("date").Value.ToString();
+                DateTime fix_date;
+                fix_date = new DateTime(Int32.Parse("20" + date.Substring(6, 2)),  // year
+                                        Int32.Parse(date.Substring(3, 2)),  // month
+                                        Int32.Parse(date.Substring(0, 2)),  // day
+                                        Int32.Parse(time.Substring(0, 2)),  // hour
+                                        Int32.Parse(time.Substring(2, 2)),  // minute
+                                        0);                                 // second
+                fix_temp.fixture_date = fix_date;
+                if (DateTime.Compare(DateTime.Now, fix_date) < 0)
+                {
+                    continue;
+                }
+
                 fix_temp.match_id = child.Key;
                 fix_temp.home_team = child.Child("home_team").Value.ToString();
                 fix_temp.away_team = child.Child("away_team").Value.ToString();
 
                 fix_temp.home_result = int.Parse(child.Child("home_score").Value.ToString());
                 fix_temp.away_result = int.Parse(child.Child("away_score").Value.ToString());
+
+                fix_temp.matchday = int.Parse(child.Child("matchday").Value.ToString());
 
                 //fixture_class_list.Add(fix_temp);
                 if (fix_temp.home_result > -1 && fix_temp.away_result > -1)
@@ -109,9 +132,7 @@ namespace football_predictor
         {
             string pred_team = "home_prediction";
 
-            // Get user home score prediction from database
-            //app = CommonData.app;
-            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
+            // Get match ID
             string match_id_str = "match_ID" + int.Parse(fix.match_id.Substring(6, 3));
 
             string uid;
@@ -144,16 +165,12 @@ namespace football_predictor
                 prediction_not_made++;
             }
 
-
         }
 
         private void check_away_prediction(fixture_class fix)
         {
             string pred_team = "away_prediction";
 
-            // Get user away score prediction from database
-            //app = CommonData.app;
-            //_prediction_database = Firebase.Database.FirebaseDatabase.GetInstance(app);
             string match_id_str = "match_ID" + int.Parse(fix.match_id.Substring(6, 3));
             string uid;
             auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
@@ -188,11 +205,6 @@ namespace football_predictor
 
         private void check_score(fixture_class fix)
         {
-            //Debug.Log("Checking scores");
-
-            //Debug.Log("Checking Predictions");
-            //Debug.Log("Result     = " + fix.home_result + " v " + fix.away_result);
-            //Debug.Log("Prediction = " + fix.home_prediction + " v " + fix.away_prediction);
 
             // Check scores are postive (have been updated)
             if (fix.home_prediction < 0 || fix.away_prediction < 0 || fix.home_result < 0 || fix.away_result < 0)
@@ -242,12 +254,9 @@ namespace football_predictor
                 }
             }
             total_user_score = total_user_score + fix.user_score;
-            //Debug.Log("TOTAL USER SCORE" + total_user_score);
-            //Debug.Log("SPOT ON = " + prediction_spot_on);
-            //Debug.Log("CORRECT RESULT = " + prediction_result_correct);
-            //Debug.Log("Prediction wrong = " + prediction_wrong);
-            //Debug.Log("Prediction not made = " + prediction_not_made);
-            //Debug.Log("total things to check = " + results_to_check);
+            // Add to matchday scores
+            CommonData.user_matchday_scores[fix.matchday] = CommonData.user_matchday_scores[fix.matchday] + fix.user_score;
+
 
             // TODO: MAKE SO DONE ONCE ALL SCORES CHECKED (ONLY DO ONCE)
             save_score_player_prefs();
@@ -264,6 +273,31 @@ namespace football_predictor
                 PlayerPrefs.SetInt("HighScore", total_user_score);
                 PlayerPrefs.Save();
             }
+
+            // Save spot on, corect result, wrong and nto made
+            PlayerPrefs.SetInt("Prediction_SpotOn", prediction_spot_on);
+            PlayerPrefs.SetInt("Prediction_Correct_result", prediction_result_correct);
+            PlayerPrefs.SetInt("Prediction_Correct", prediction_spot_on + prediction_result_correct);
+            PlayerPrefs.SetInt("Prediction_Wrong", prediction_wrong);
+            PlayerPrefs.SetInt("Prediction_NotMade", prediction_not_made);
+
+
+            // Set the users highest weekly score
+            int highest_weekly_score;
+            highest_weekly_score = PlayerPrefs.GetInt("HighestWeeklyScore", 0);
+            int highest_weekly_score_matchday;
+            highest_weekly_score_matchday = PlayerPrefs.GetInt("HighestWeeklyScoreMatchday", 0);
+            int matchday = 1;
+            foreach(int matchday_score in CommonData.user_matchday_scores)
+            {
+                if(matchday_score > highest_weekly_score)
+                {
+                    PlayerPrefs.SetInt("HighestWeeklyScore", matchday_score);
+                    PlayerPrefs.SetInt("HighestWeeklyScoreMatchday", matchday);
+                }
+                matchday++;
+            }
+
         }
 
         private void add_score_to_db()
@@ -286,13 +320,25 @@ namespace football_predictor
             user_id = auth.CurrentUser.UserId;
             display_name =  auth.CurrentUser.DisplayName;
 #endif
-            //// Move to sign in or something? Should not need to add each time TODO:
-            //_prediction_database.RootReference.Child("users").Child(user_id).SetValueAsync(display_name);
             // Set the values in the database
             //_prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).SetValueAsync(total_user_score);
             _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("name").SetValueAsync(display_name);
-            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("score").SetValueAsync(PlayerPrefs.GetInt("HighScore",110)); // total_user_score
+            // total_user_score
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("score").SetValueAsync(PlayerPrefs.GetInt("HighScore", 0));
+            // User highest weekly score
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("highest_weekly_score").SetValueAsync(PlayerPrefs.GetInt("HighestWeeklyScore", 0));
+            // The matchday on which the users highest weekly score occured
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("highest_weekly_score_matchday").SetValueAsync(PlayerPrefs.GetInt("HighestWeeklyScoreMatchday", 0));
+            //
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("Prediction_SpotOn").SetValueAsync(PlayerPrefs.GetInt("Prediction_SpotOn", 0));
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("Prediction_Correct_result").SetValueAsync(PlayerPrefs.GetInt("Prediction_Correct_result", 0));
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("Prediction_Correct").SetValueAsync(PlayerPrefs.GetInt("Prediction_Correct", 0));
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("Prediction_Wrong").SetValueAsync(PlayerPrefs.GetInt("Prediction_Wrong", 0));
+            _prediction_database.RootReference.Child("user_scores").Child("premier_league").Child(user_id).Child("Prediction_NotMade").SetValueAsync(PlayerPrefs.GetInt("Prediction_NotMade", 0));
 
+
+
+            // Is this needed?
             get_global_position();
         }
 
@@ -322,22 +368,7 @@ namespace football_predictor
 
                 }
             });
-            //_prediction_database.RootReference.Child(path).Child("premier_league").GetValueAsync().ContinueWith(task =>
-            //{
-            //    if (task.IsFaulted)
-            //    {
-            //        // task faulted
-            //        Debug.Log("task faulted");
-            //        Total_score_text.text = "task faulted";
-            //    }
-            //    else if (task.IsCompleted)
-            //    {
-            //        DataSnapshot snapshot = task.Result;
 
-            //        Debug.Log("SNAPSHOT = " + snapshot.Reference);
-
-            //    }
-            //});
         }
     }
 }

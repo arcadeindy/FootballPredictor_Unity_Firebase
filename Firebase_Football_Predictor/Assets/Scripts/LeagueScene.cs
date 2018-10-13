@@ -8,6 +8,7 @@ using Firebase;
 using Firebase.Unity.Editor;
 using UnityEngine.UI;
 using Firebase.Database;
+using UnityEngine.SceneManagement;
 
 namespace football_predictor
 {
@@ -21,6 +22,9 @@ namespace football_predictor
         public GameObject _entry_template;
 
         public GameObject _loading_cover;
+
+        public string[] table_vars;
+
         private bool reload_asked;
 
         // For auth and database
@@ -31,7 +35,7 @@ namespace football_predictor
         // Use this for initialization
         void Start()
         {
-            Debug.Log("in Leagues Scene");
+            Debug.Log("In Leagues Scene");
 
             // Get user from authentication
             carry_out_firebase_auth();
@@ -50,7 +54,8 @@ namespace football_predictor
                     CommonData._loaded_scores)
                 {
                     // Load scene again
-                    scene_transition_manager.GetComponent<scene_manager>().load_league_scene();
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    //scene_transition_manager.GetComponent<scene_manager>().load_league_scene();
                 }
             }
         }
@@ -71,45 +76,74 @@ namespace football_predictor
             // Create arrays for user name and user score
             string[] global_user_names = new string[CommonData._database_scores.ChildrenCount];
             int[] global_user_scores = new int[CommonData._database_scores.ChildrenCount];
+
+            int[,] global_scores = new int[CommonData._database_scores.ChildrenCount, table_vars.Length];
+
             // Loop over snapshot children
-            int count = 0;
+            int user_index = 0;
+
             foreach (DataSnapshot snapshotChild in CommonData._database_scores.Children)
             {
+                // Get from database snapshot
                 string user_name = snapshotChild.Child("name").Value.ToString();
-                int user_score = int.Parse(snapshotChild.Child("score").Value.ToString());
-                Debug.Log("user = " + user_name + ", score = " + user_score);
+                int var_index = 0;
+                foreach (string tablevar in table_vars)
+                {
+                    foreach(DataSnapshot child in snapshotChild.Children)
+                    {
+                        print(child.Key);
+
+                    }
+                    if (snapshotChild.Child(tablevar).Exists)
+                    {
+                        global_scores[user_index, var_index] = int.Parse(snapshotChild.Child(tablevar).Value.ToString());
+
+                    }
+                    var_index++;
+                }
 
                 // Add values found to arrays (so can reverse later, as currently in ascending order)
-                global_user_names[count] = user_name;
-                global_user_scores[count] = user_score;
-                count++;
+                global_user_names[user_index] = user_name;
+                user_index++;
             }
+
             // Call task to create UI
-            Debug.Log("CALLING CREATE LEAGUE UI");
-            create_global_league_UI(global_user_names, global_user_scores);
+            //create_global_league_UI(global_user_names, global_user_scores);
+            create_global_league_UI(global_user_names, global_scores);
+
 
         }
 
-        private void create_global_league_UI(string[] users, int[] scores)
+        private void create_global_league_UI(string[] users, int[,] scores)
         {
-            Debug.Log("CALLED CREATE LEAGUE UI ");
+            // Set table length (number of table vars + 1 (for user name)
+            _scrollbar_content.GetComponent<GridLayoutGroup>().constraintCount = table_vars.Length + 1;
+
             // Create table header
             create_table_entry("Users", _scrollbar_content);
-            create_table_entry("Score", _scrollbar_content);
+            foreach(string tablevar in table_vars)
+            {
+                create_table_entry(tablevar, _scrollbar_content);
 
+            }
 
-            // Loop through the arrays in reverse order 
-            // Just display the top 10 for now
+            // Loop through the arrays in reverse order (high to low)
             for (int i = users.Length-1; i>=0; i--)
             {
-                Debug.Log("i = " + i);
-                Debug.Log(users[i] + " :  " + scores[i]);
+                //Debug.Log("i = " + i);
+                //Debug.Log(users[i] + " :  " + scores[i]);
 
                 // Add user name as a child of vertical scroll content
                 create_table_entry(users[i], _scrollbar_content);
 
-                // Add user score
-                create_table_entry(scores[i].ToString(), _scrollbar_content);
+                // Add table vars
+                int var_count = 0;
+                foreach(string tablevar in table_vars)
+                {
+                    create_table_entry(scores[i, var_count].ToString(), _scrollbar_content);
+                    var_count++;
+                }
+                //create_table_entry(scores[i].ToString(), _scrollbar_content);
 
             }
         }
@@ -118,14 +152,13 @@ namespace football_predictor
         {
             // Adds a value to as a child of another
             // Assumes grid content fitter used
-            // Will just go through columns according to grid content fitter rules
-            Debug.Log("CREATING TABLE ENTRY");
+            // Will just go through columns according to grid content fitter rules - TODO: if more than two columns then set here?!
             GameObject _table_entry = Instantiate(_entry_template);
-            Debug.Log("A");
+            // Set text
             _table_entry.GetComponentInChildren<Text>().text = value;
-            Debug.Log("B");
+            // Set as child
             _table_entry.transform.SetParent(table_content.transform, false);
-            Debug.Log("C");
+            // Set as active so we can see it
             _table_entry.SetActive(true);
         }
 
@@ -158,6 +191,5 @@ namespace football_predictor
         }
 
     }
-
 
 }

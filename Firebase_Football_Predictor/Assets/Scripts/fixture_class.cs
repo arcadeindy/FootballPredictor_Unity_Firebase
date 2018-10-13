@@ -67,6 +67,19 @@ namespace football_predictor
             get;
             set;
         }
+
+        public int matchday
+        {
+            get;
+            set;
+        }
+
+
+        //public int[] user_matchday_scores
+        //{
+        //    get;
+        //    set;
+        //}
     }
 
 }
