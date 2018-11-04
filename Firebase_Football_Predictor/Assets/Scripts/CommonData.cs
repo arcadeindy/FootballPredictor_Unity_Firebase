@@ -29,6 +29,13 @@ namespace football_predictor
         // User matchday score array
         public static int[] user_matchday_scores = new int[38];
 
+        // Arrays for predictions spot on, correct, wrong and not made
+        public static int[] user_pred_spoton = new int[38];
+        public static int[] user_pred_correct = new int[38];
+        public static int[] user_pred_wrong = new int[38];
+        public static int[] user_pred_notmade = new int[38];
+
+
     }
 
 }

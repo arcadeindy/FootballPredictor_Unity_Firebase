@@ -53,3 +53,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/league_scene_full_standings.unity
     guid: 5ff06ac455c328a4b8fad6dd4e8455e7
+  - enabled: 1
+    path: Assets/Scenes/weekly_results.unity
+    guid: 9c93fa201b571a048bc59c748cc18c1c

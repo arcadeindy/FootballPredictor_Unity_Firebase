@@ -51,6 +51,16 @@ namespace football_predictor
             {
                 CommonData.user_matchday_scores[i] = 0;
             }
+            PlayerPrefs.DeleteKey("Prediction_SpotOn");
+            PlayerPrefs.DeleteKey("Prediction_Correct_result");
+            PlayerPrefs.DeleteKey("Prediction_Correct");
+            PlayerPrefs.DeleteKey("Prediction_Wrong");
+            PlayerPrefs.DeleteKey("Prediction_NotMade");
+            PlayerPrefs.SetInt("Prediction_SpotOn", 0);
+            PlayerPrefs.SetInt("Prediction_Correct_result", 0);
+            PlayerPrefs.SetInt("Prediction_Correct", 0);
+            PlayerPrefs.SetInt("Prediction_Wrong", 0);
+            PlayerPrefs.SetInt("Prediction_NotMade", 0);
 
             // Get user from authentication
             carry_out_firebase_auth();
@@ -59,7 +69,10 @@ namespace football_predictor
             List<fixture_class> fixtures = new List<fixture_class>();
             get_fixtures_from_database(fixtures);
 
-            // Move to own scene
+            // Get scores
+            save_score_player_prefs();
+
+            // Move to own scene TODO
             add_score_to_db();
 
         }
@@ -257,9 +270,22 @@ namespace football_predictor
             // Add to matchday scores
             CommonData.user_matchday_scores[fix.matchday] = CommonData.user_matchday_scores[fix.matchday] + fix.user_score;
 
+            if(fix.user_score == 30)
+            {
+                CommonData.user_pred_spoton[fix.matchday] = CommonData.user_pred_spoton[fix.matchday] + 1;
+            }
+            if (fix.user_score == 10)
+            {
+                CommonData.user_pred_correct[fix.matchday] = CommonData.user_pred_correct[fix.matchday] + 1;
+            }
+            if (fix.user_score == 0)
+            {
+                CommonData.user_pred_wrong[fix.matchday] = CommonData.user_pred_wrong[fix.matchday] + 1;
+            }
+
 
             // TODO: MAKE SO DONE ONCE ALL SCORES CHECKED (ONLY DO ONCE)
-            save_score_player_prefs();
+            //save_score_player_prefs();
         }
 
         private void save_score_player_prefs()

@@ -49,6 +49,11 @@ public class scene_manager : MonoBehaviour {
         SceneManager.LoadScene("league_scene_full_standings");
     }
 
+    public void load_weekly_results()
+    {
+        SceneManager.LoadScene("weekly_results");
+    }
+
     public void load_home_scene()
     {
         SceneManager.LoadScene("home_scene");
