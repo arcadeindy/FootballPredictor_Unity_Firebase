@@ -62,6 +62,16 @@ namespace football_predictor
             PlayerPrefs.SetInt("Prediction_Wrong", 0);
             PlayerPrefs.SetInt("Prediction_NotMade", 0);
 
+            // Reset the matchday score arrays as at the moment these are updated
+            // each time the scene is called atm FIXME:
+            for (int matchday = 0; matchday < CommonData.user_pred_spoton.Length; matchday++)
+            {
+                CommonData.user_pred_spoton[matchday] = 0;
+                CommonData.user_pred_correct[matchday] = 0;
+                CommonData.user_pred_wrong[matchday] = 0;
+                CommonData.user_pred_notmade[matchday] = 0;
+            }
+
             // Get user from authentication
             carry_out_firebase_auth();
 
