@@ -82,6 +82,7 @@ namespace football_predictor
             // Loop over snapshot children
             int user_index = 0;
 
+            // Go through each user score for each week
             foreach (DataSnapshot snapshotChild in CommonData._database_scores.Children)
             {
                 // Get from database snapshot

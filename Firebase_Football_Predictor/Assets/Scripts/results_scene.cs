@@ -328,6 +328,9 @@ namespace football_predictor
             {
                 if(matchday_score > highest_weekly_score)
                 {
+                    // Set new high score
+                    highest_weekly_score = matchday_score;
+                    // Update player prefs
                     PlayerPrefs.SetInt("HighestWeeklyScore", matchday_score);
                     PlayerPrefs.SetInt("HighestWeeklyScoreMatchday", matchday);
                 }

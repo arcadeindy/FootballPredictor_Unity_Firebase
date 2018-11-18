@@ -101,8 +101,8 @@ namespace football_predictor
                 fix_temp.fixture_date = fix_date;
                 // Add fixture to list
                 C_Fixtures.Add(fix_temp);
-                // See if any fixtures within 7 days (includes past)
-                if (DateTime.Compare(DateTime.Now.AddDays(7), fix_date) > 0)
+                // See if any fixtures within 7 days (includes past) TODO: link this value to a REMOTE CONFIG VALUE IN GOOGLE FIREBASE
+                if (DateTime.Compare(DateTime.Now.AddDays(11), fix_date) > 0)
                 {
                     // Check fixture is not in the past
                     if (DateTime.Compare(DateTime.Now, fix_date.AddMinutes(-30)) < 0)
