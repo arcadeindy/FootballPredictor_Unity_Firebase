@@ -112,7 +112,6 @@ namespace football_predictor
             //create_global_league_UI(global_user_names, global_user_scores);
             create_global_league_UI(global_user_names, global_scores);
 
-
         }
 
         private void create_global_league_UI(string[] users, int[,] scores)
@@ -144,7 +143,6 @@ namespace football_predictor
                     create_table_entry(scores[i, var_count].ToString(), _scrollbar_content);
                     var_count++;
                 }
-                //create_table_entry(scores[i].ToString(), _scrollbar_content);
 
             }
         }
