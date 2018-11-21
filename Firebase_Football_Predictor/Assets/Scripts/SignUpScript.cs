@@ -147,7 +147,10 @@ namespace football_predictor
                   if (task.IsFaulted)
                   {
                       Debug.LogError("User creation task encountered an error: " + task.Exception);
-                      error_text.text = "ERROR: " + task.Exception;
+                      //error_text.text = "ERROR: " + task.Exception.Message;
+
+                      error_text.text = "ERROR: " + firebase_helper.get_firebase_exception(task.Exception as AggregateException);
+
                       error_text.enabled = true;
                       return;
                   }

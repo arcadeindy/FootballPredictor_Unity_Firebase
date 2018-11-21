@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using football_predictor;
 
 public class Log_in_script : MonoBehaviour {
 
@@ -108,7 +109,9 @@ public class Log_in_script : MonoBehaviour {
                       ((Firebase.Auth.AuthError)firebaseEx.ErrorCode).ToString());
                 }
                 Debug.Log(authErrorCode + exception.ToString());
-                error_text.text = "Error" + exception.ToString();
+                //error_text.text = "Error" + exception.ToString();
+                error_text.text = "ERROR: " + firebase_helper.get_firebase_exception(task.Exception as AggregateException);
+
                 error_text.enabled = true;
             }
         }
